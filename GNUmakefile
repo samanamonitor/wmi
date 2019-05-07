@@ -20,6 +20,7 @@ ifeq ($(PYTHON),)
 PYTHON=python
 endif
 
+ZENHOME=        .
 PYLIBDIR=	$(ZENHOME)/lib/python
 ZENBIN=		$(ZENHOME)/bin
 PYINCLUDE=	$(shell $(PYTHON) pyinclude.py)
