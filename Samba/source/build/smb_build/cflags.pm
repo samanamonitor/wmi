@@ -28,6 +28,7 @@ sub create_cflags($$)
 			print CFLAGS_TXT "$ofile $dfile: CFLAGS+= $cflags\n";
 		}
 	}
+	print CFLAGS_TXT "\n";
 	close(CFLAGS_TXT);
 
 	print __FILE__.": creating $file\n";
