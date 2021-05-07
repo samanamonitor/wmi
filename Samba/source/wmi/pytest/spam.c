@@ -11,26 +11,6 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
-static PyObject *spam_system(PyObject *self, PyObject *args);
-static PyObject *spam_string(PyObject *self, PyObject *args);
-
-static PyMethodDef SpamMethods[] = {
-    {"system",  spam_system, METH_VARARGS,
-     "Execute a shell command."},
-    {"string", spam_string, METH_VARARGS,
-     "Returns a string"},
-    {NULL, NULL, 0, NULL}        /* Sentinel */
-};
-
-static struct PyModuleDef spammodule = {
-    PyModuleDef_HEAD_INIT,
-    "spam",   /* name of module */
-    "documentation",     /* module documentation, may be NULL */
-    -1,       /* size of per-interpreter state of the module,
-                 or -1 if the module keeps state in global variables. */
-    SpamMethods
-};
-
 static PyObject *
 spam_system(PyObject *self, PyObject *args)
 {
@@ -48,6 +28,23 @@ spam_string(PyObject *self, PyObject *args)
 {
     return Py_BuildValue("s", "This is a test");
 }
+
+static PyMethodDef SpamMethods[] = {
+    {"system",  spam_system, METH_VARARGS,
+     "Execute a shell command."},
+    {"string", spam_string, METH_VARARGS,
+     "Returns a string"},
+    {NULL, NULL, 0, NULL}        /* Sentinel */
+};
+
+static struct PyModuleDef spammodule = {
+    PyModuleDef_HEAD_INIT,
+    "spam",   /* name of module */
+    "this is module documentation",     /* module documentation, may be NULL */
+    -1,       /* size of per-interpreter state of the module,
+                 or -1 if the module keeps state in global variables. */
+    SpamMethods
+};
 
 PyMODINIT_FUNC
 PyInit_spam(void)
