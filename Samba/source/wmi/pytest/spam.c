@@ -12,7 +12,7 @@
 #include <Python.h>
 
 static PyObject *spam_system(PyObject *self, PyObject *args);
-static PyObject *spam_string(PyObject *self);
+static PyObject *spam_string(PyObject *self, PyObject *args);
 
 static PyMethodDef SpamMethods[] = {
     {"system",  spam_system, METH_VARARGS,
@@ -44,7 +44,7 @@ spam_system(PyObject *self, PyObject *args)
 }
 
 static PyObject *
-spam_string(PyObject *self)
+spam_string(PyObject *self, PyObject *args)
 {
     return PyBuildValue("This is a test");
 }
