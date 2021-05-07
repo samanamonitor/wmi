@@ -38,6 +38,16 @@ spam_dict(PyObject *self, PyObject *args)
     return out;
 }
 
+static PyObject *
+spam_list(PyObject *self, PyObject *args)
+{
+    PyObject *out = Py_BuildValue("[]");
+    for(int i=0; i<10; i++){
+        PyObject_CallMethod(out, "__add__", "(i)", i);
+    }
+    return out;
+}
+
 static PyMethodDef SpamMethods[] = {
     {"system",  spam_system, METH_VARARGS,
      "Execute a shell command."},
@@ -45,6 +55,8 @@ static PyMethodDef SpamMethods[] = {
      "Returns a string"},
     {"dict", spam_dict, METH_FASTCALL,
      "Returns a dict"},
+    {"list", spam_list, METH_FASTCALL,
+     "Returns a list"},
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
