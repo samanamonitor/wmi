@@ -4,3 +4,6 @@ CFLAGS=-I/usr/include -I/usr/include/python3.6m -DNDEBUG -g -O3 -Wall -Wstrict-p
 
 %.so: %.o
 	$(CC) -shared $^ -L/usr/lib -o $@
+
+clean:
+	rm -f *.o *.so
