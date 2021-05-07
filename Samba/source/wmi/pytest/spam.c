@@ -28,8 +28,9 @@ spam_system(PyObject *self, PyObject *args)
 static PyObject *
 spam_set(PyObject *self, PyObject *args)
 {
-    global_var++;
-    return Py_BuildValue("");
+    if(!PyArg_ParseTuple(args, "i", &global_var))
+        return NULL;
+    return PyLong_FromLong(global_var);
 }
 
 static PyObject *
