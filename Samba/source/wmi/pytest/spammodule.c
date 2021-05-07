@@ -1,5 +1,14 @@
+/*
+    Ubuntu required packages: libpython3-dev
+    Build command:
+    gcc -DNDEBUG -g -O3 -Wall -Wstrict-prototypes -fPIC -DMAJOR_VERSION=1 -DMINOR_VERSION=0 \
+        -I/usr/include -I/usr/include/python3.6m -c spammodule.c -o spammodule.o
+*/
+
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
+
+static PyObject *spam_system(PyObject *self, PyObject *args);
 
 static PyMethodDef SpamMethods[] = {
     {"system",  spam_system, METH_VARARGS,
@@ -34,7 +43,7 @@ PyInit_spam(void)
     return PyModule_Create(&spammodule);
 }
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     wchar_t *program = Py_DecodeLocale(argv[0], NULL);
     if (program == NULL) {
