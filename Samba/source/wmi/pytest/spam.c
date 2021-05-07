@@ -33,6 +33,8 @@ static PyObject *
 spam_dict(PyObject *self, PyObject *args)
 {
     PyObject *out = Py_BuildValue("{}");
+    PyObject_CallMethod(out, "(s,s)", "firstname", "fabian");
+    PyObject_CallMethod(out, "(s,s)", "lastname", "baens");
     return out;
 }
 
