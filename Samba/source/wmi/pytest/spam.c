@@ -75,7 +75,7 @@ static PyMethodDef SpamMethods[] = {
      "Returns a dict"},
     {"list", spam_list, METH_FASTCALL,
      "Returns a list"},
-    {"set", spam_set, METH_FASTCALL,
+    {"set", spam_set, METH_VARARGS,
      "Returns modifies internal variable"},
     {"get", spam_get, METH_FASTCALL,
      "Returns internal variable"},
