@@ -11,6 +11,8 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
+long global_var=0;
+
 static PyObject *
 spam_system(PyObject *self, PyObject *args)
 {
@@ -21,6 +23,19 @@ spam_system(PyObject *self, PyObject *args)
         return NULL;
     sts = system(command);
     return PyLong_FromLong(sts);
+}
+
+static PyObject *
+spam_set(PyObject *self, PyObject *args)
+{
+    global_var++;
+    return Py_BuildValue("");
+}
+
+static PyObject *
+spam_get(PyObject *self, PyObject *args)
+{
+    return PyLong_FromLong(global_var);
 }
 
 static PyObject *
@@ -57,6 +72,10 @@ static PyMethodDef SpamMethods[] = {
      "Returns a dict"},
     {"list", spam_list, METH_FASTCALL,
      "Returns a list"},
+    {"set", spam_set, METH_FASTCALL,
+     "Returns modifies internal variable"},
+    {"get", spam_get, METH_FASTCALL,
+     "Returns internal variable"},
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
