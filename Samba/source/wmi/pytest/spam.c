@@ -42,7 +42,7 @@ static PyMethodDef SpamMethods[] = {
      "Execute a shell command."},
     {"string", spam_string, METH_VARARGS,
      "Returns a string"},
-    {"dict", spam_dict, 0,
+    {"dict", spam_dict, METH_FASTCALL,
      "Returns a dict"},
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
