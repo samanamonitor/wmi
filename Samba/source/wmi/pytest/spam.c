@@ -28,10 +28,10 @@ spam_system(PyObject *self, PyObject *args)
 static PyObject *
 spam_set(PyObject *self, PyObject *args)
 {
-    const long *in;
+    const long in;
     if(!PyArg_ParseTuple(args, "i", &in))
         return NULL;
-    global_var = *in;
+    global_var = in;
     return PyLong_FromLong(global_var);
 }
 
