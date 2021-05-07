@@ -46,7 +46,7 @@ spam_system(PyObject *self, PyObject *args)
 static PyObject *
 spam_string(PyObject *self, PyObject *args)
 {
-    return PyBuildValue("This is a test");
+    return Py_BuildValue("This is a test");
 }
 
 PyMODINIT_FUNC
