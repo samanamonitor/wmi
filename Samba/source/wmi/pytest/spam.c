@@ -34,7 +34,7 @@ spam_dict(PyObject *self, PyObject *args)
 {
     PyObject *fname = Py_BuildValue("s", "fabian");
     PyObject *lname = Py_BuildValue("s", "baena");
-    return Py_BuildValue("{s:o,s:o}", "firstname", fname, "lastname", lname);
+    return Py_BuildValue("{s:O,s:O}", "firstname", fname, "lastname", lname);
 }
 
 static PyMethodDef SpamMethods[] = {
