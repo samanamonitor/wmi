@@ -29,11 +29,21 @@ spam_string(PyObject *self, PyObject *args)
     return Py_BuildValue("s", "This is a test");
 }
 
+static PyObject *
+spam_dict(PyObject *self, PyObject *args)
+{
+    PyObject *fname = Py_BuildValue("s", "fabian");
+    PyObject *lname = Py_BuildValue("s", "baena");
+    return Py_BuildValue("{s:o,s:o}", "firstname", fname, "lastname", lname);
+}
+
 static PyMethodDef SpamMethods[] = {
     {"system",  spam_system, METH_VARARGS,
      "Execute a shell command."},
     {"string", spam_string, METH_VARARGS,
      "Returns a string"},
+    {"dict", spam_dict, 0,
+     "Returns a dict"},
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
