@@ -16,6 +16,8 @@ static PyObject *spam_system(PyObject *self, PyObject *args);
 static PyMethodDef SpamMethods[] = {
     {"system",  spam_system, METH_VARARGS,
      "Execute a shell command."},
+    {"string", spam_string, METH_VARARGS,
+     "Returns a string"},
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
@@ -38,6 +40,12 @@ spam_system(PyObject *self, PyObject *args)
         return NULL;
     sts = system(command);
     return PyLong_FromLong(sts);
+}
+
+static PyObject *
+spam_string(PyObject *self)
+{
+    return PyBuildValue("This is a test");
 }
 
 PyMODINIT_FUNC
