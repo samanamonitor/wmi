@@ -12,6 +12,7 @@
 #include <Python.h>
 
 static PyObject *spam_system(PyObject *self, PyObject *args);
+static PyObject *spam_string(PyObject *self);
 
 static PyMethodDef SpamMethods[] = {
     {"system",  spam_system, METH_VARARGS,
