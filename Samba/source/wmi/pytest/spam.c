@@ -43,7 +43,7 @@ spam_list(PyObject *self, PyObject *args)
 {
     PyObject *out = Py_BuildValue("[]");
     for(int i=0; i<10; i++){
-        PyObject_CallMethod(out, "__add__", "(i)", i);
+        PyObject_CallMethod(out, "append", "(i)", i);
     }
     return out;
 }
