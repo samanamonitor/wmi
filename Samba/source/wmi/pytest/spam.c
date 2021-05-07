@@ -29,7 +29,7 @@ static PyObject *
 spam_set(PyObject *self, PyObject *args)
 {
     long in;
-    if(!PyArg_ParseTuple(args, "i", &in))
+    if(!PyArg_ParseTuple(args, "l", &in))
         return NULL;
     global_var = in;
     return PyLong_FromLong(global_var);
