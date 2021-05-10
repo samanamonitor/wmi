@@ -28,8 +28,8 @@
 #include "librpc/gen_ndr/ndr_remact_c.h"
 #include "librpc/gen_ndr/ndr_epmapper_c.h"
 #include "librpc/gen_ndr/com_dcom.h"
-*/
 #include "librpc/rpc/dcerpc_table.h"
+*/
 
 #include "lib/com/dcom/dcom.h"
 #include "lib/com/proto.h"
