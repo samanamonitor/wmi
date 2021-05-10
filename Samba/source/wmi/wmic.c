@@ -133,7 +133,7 @@ char *string_CIMVAR(TALLOC_CTX *mem_ctx, union CIMVAR *v, enum CIMTYPE_ENUMERATI
         case CIM_SINT32: return talloc_asprintf(mem_ctx, "%d", v->v_sint32);
         case CIM_UINT32: return talloc_asprintf(mem_ctx, "%u", v->v_uint32);
         case CIM_SINT64: return talloc_asprintf(mem_ctx, "%ld", v->v_sint64);
-        case CIM_UINT64: return talloc_asprintf(mem_ctx, "%llu", v->v_sint64);
+        case CIM_UINT64: return talloc_asprintf(mem_ctx, "%lu", v->v_sint64);
         case CIM_REAL32: return talloc_asprintf(mem_ctx, "%f", (double)v->v_uint32);
         case CIM_REAL64: return talloc_asprintf(mem_ctx, "%f", (double)v->v_uint64);
         case CIM_BOOLEAN: return talloc_asprintf(mem_ctx, "%s", v->v_boolean?"True":"False");
