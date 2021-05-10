@@ -3170,12 +3170,12 @@ again:
 
 	for ($parser->YYData->{INPUT}) {
 		if (/^\#/) {
-			if (s/^\# (\d+) \"(.*?)\"( \d+|)//) {
+			if (s/^\# (\d+) \"(.*?)\"( \d+|)$//) {
 				$parser->YYData->{LINE} = $1-1;
 				$parser->YYData->{INPUT_FILENAME} = $2;
 				goto again;
 			}
-			if (s/^\#line (\d+) \"(.*?)\"( \d+|)//) {
+			if (s/^\#line (\d+) \"(.*?)\"( \d+|)$//) {
 				$parser->YYData->{LINE} = $1-1;
 				$parser->YYData->{INPUT_FILENAME} = $2;
 				goto again;
@@ -3241,7 +3241,6 @@ sub parse_file($$)
 	}
 	my $includes = join('',map { " -I$_" } @$incdirs);
 	my $data = `$cpp -D__PIDL__$includes -xc $filename`;
-	print("FB $cpp -D__PIDL__$includes -xc $filename\n");
 	$/ = $saved_delim;
 
 	return parse_string($data, $filename);
