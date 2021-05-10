@@ -266,7 +266,6 @@ sub _Parse {
 	$$check='';
 
     while(1) {
-print("FB\n");
         my($actions,$act,$stateno);
 
         $stateno=$$stack[-1][0];
@@ -280,6 +279,7 @@ print("FB\n");
 #DBG>					 join(',',map { $$_[0] } @$stack).
 #DBG>					 "]\n";
 
+print("FB $actions\n");
 
         if  (exists($$actions{ACTIONS})) {
 
