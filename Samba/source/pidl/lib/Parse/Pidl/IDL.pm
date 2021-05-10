@@ -88,8 +88,8 @@ sub YYParse {
         $@ and die $@;
 	}
 	else {
-print("FB\n");
 		$retval = $self->_Parse();
+print("FB\n");
 	}
     $retval
 }
