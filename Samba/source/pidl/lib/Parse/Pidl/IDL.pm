@@ -3231,7 +3231,7 @@ sub parse_string
 sub parse_file($$)
 {
 	my ($filename,$incdirs) = @_;
-print("FB $filename\n");
+
 	my $saved_delim = $/;
 	undef $/;
 	my $cpp = $ENV{CPP};
@@ -3241,7 +3241,7 @@ print("FB $filename\n");
 	my $includes = join('',map { " -I$_" } @$incdirs);
 	my $data = `$cpp -D__PIDL__$includes -xc $filename`;
 	$/ = $saved_delim;
-	
+print("FB $filename\n");	
 	return parse_string($data, $filename);
 }
 
