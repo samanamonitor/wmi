@@ -3241,6 +3241,7 @@ sub parse_file($$)
 	}
 	my $includes = join('',map { " -I$_" } @$incdirs);
 	my $data = `$cpp -D__PIDL__$includes -xc $filename`;
+	print("FB $includes $data")
 	$/ = $saved_delim;
 
 	return parse_string($data, $filename);
