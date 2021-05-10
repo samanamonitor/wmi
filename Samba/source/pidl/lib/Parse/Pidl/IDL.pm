@@ -245,7 +245,6 @@ sub _Parse {
      = @$self{ 'RULES', 'STATES', 'LEX', 'ERROR' };
 	my($errstatus,$nberror,$token,$value,$stack,$check,$dotpos)
      = @$self{ 'ERRST', 'NBERR', 'TOKEN', 'VALUE', 'STACK', 'CHECK', 'DOTPOS' };
-print("FB\n");
 
 #DBG>	my($debug)=$$self{DEBUG};
 #DBG>	my($dbgerror)=0;
@@ -265,6 +264,7 @@ print("FB\n");
 	($$token,$$value)=(undef,undef);
 	@$stack=( [ 0, undef ] );
 	$$check='';
+print("FB\n");
 
     while(1) {
         my($actions,$act,$stateno);
