@@ -3217,7 +3217,7 @@ sub parse_string
 	my ($data,$filename) = @_;
 
 	my $self = new Parse::Pidl::IDL;
-
+print("FB $filename\n");
     $self->YYData->{INPUT_FILENAME} = $filename;
     $self->YYData->{INPUT} = $data;
     $self->YYData->{LINE} = 0;
@@ -3241,7 +3241,7 @@ sub parse_file($$)
 	my $includes = join('',map { " -I$_" } @$incdirs);
 	my $data = `$cpp -D__PIDL__$includes -xc $filename`;
 	$/ = $saved_delim;
-print("FB $filename\n");	
+	
 	return parse_string($data, $filename);
 }
 
