@@ -81,7 +81,7 @@ sub YYParse {
     my($retval);
 
 	_CheckParams( \@params, \%params, \@_, $self );
-print("FB $filename\n");
+print("FB\n");
 	if($$self{DEBUG}) {
 		_DBLoad();
 		$retval = eval '$self->_DBParse()';#Do not create stab entry on compile
@@ -3241,7 +3241,7 @@ sub parse_file($$)
 	my $includes = join('',map { " -I$_" } @$incdirs);
 	my $data = `$cpp -D__PIDL__$includes -xc $filename`;
 	$/ = $saved_delim;
-	
+
 	return parse_string($data, $filename);
 }
 
