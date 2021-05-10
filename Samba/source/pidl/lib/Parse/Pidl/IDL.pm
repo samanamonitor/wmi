@@ -279,7 +279,6 @@ sub _Parse {
 #DBG>					 join(',',map { $$_[0] } @$stack).
 #DBG>					 "]\n";
 
-print("FB $stateno\n");
 
         if  (exists($$actions{ACTIONS})) {
 
