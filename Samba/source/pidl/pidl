@@ -572,13 +572,14 @@ sub process_file($)
 	my $basename = basename($idl_file, ".idl");
 
 	unless ($opt_quiet) { print "Compiling $idl_file\n"; }
+    print("FB\n");
 
 	if ($opt_parse_idl_tree) {
 		$pidl = LoadStructure($idl_file);
 		defined $pidl || die "Failed to load $idl_file";
 	} else {
 		require Parse::Pidl::IDL;
-        print($idl_file);
+        print("FB\n");
 		$pidl = Parse::Pidl::IDL::parse_file($idl_file, \@opt_incdirs);
 		require Parse::Pidl::Typelist;
 		Parse::Pidl::Typelist::LoadIdl($pidl);
