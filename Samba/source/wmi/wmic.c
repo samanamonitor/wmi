@@ -18,8 +18,8 @@
 */
 
 #include "includes.h"
-#include "lib/cmdline/popt_common.h"
 /*
+#include "lib/cmdline/popt_common.h"
 #include "librpc/rpc/dcerpc.h"
 #include "librpc/gen_ndr/ndr_oxidresolver.h"
 #include "librpc/gen_ndr/ndr_oxidresolver_c.h"
