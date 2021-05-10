@@ -579,7 +579,7 @@ sub process_file($)
 		defined $pidl || die "Failed to load $idl_file";
 	} else {
 		require Parse::Pidl::IDL;
-        print("FB\n");
+        print("FB $idl_file\n");
 		$pidl = Parse::Pidl::IDL::parse_file($idl_file, \@opt_incdirs);
 		require Parse::Pidl::Typelist;
 		Parse::Pidl::Typelist::LoadIdl($pidl);
