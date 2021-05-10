@@ -279,7 +279,7 @@ sub _Parse {
 #DBG>					 join(',',map { $$_[0] } @$stack).
 #DBG>					 "]\n";
 
-print("FB $actions\n");
+print("FB $$actions{ACTIONS}\n");
 
         if  (exists($$actions{ACTIONS})) {
 
