@@ -132,8 +132,8 @@ char *string_CIMVAR(TALLOC_CTX *mem_ctx, union CIMVAR *v, enum CIMTYPE_ENUMERATI
         case CIM_UINT16: return talloc_asprintf(mem_ctx, "%u", v->v_uint16);
         case CIM_SINT32: return talloc_asprintf(mem_ctx, "%d", v->v_sint32);
         case CIM_UINT32: return talloc_asprintf(mem_ctx, "%u", v->v_uint32);
-        case CIM_SINT64: return talloc_asprintf(mem_ctx, "%ld", v->v_sint64);
-        case CIM_UINT64: return talloc_asprintf(mem_ctx, "%lu", v->v_sint64);
+        case CIM_SINT64: return talloc_asprintf(mem_ctx, "%lld", v->v_sint64);
+        case CIM_UINT64: return talloc_asprintf(mem_ctx, "%llu", v->v_sint64);
         case CIM_REAL32: return talloc_asprintf(mem_ctx, "%f", (double)v->v_uint32);
         case CIM_REAL64: return talloc_asprintf(mem_ctx, "%f", (double)v->v_uint64);
         case CIM_BOOLEAN: return talloc_asprintf(mem_ctx, "%s", v->v_boolean?"True":"False");
@@ -148,8 +148,8 @@ char *string_CIMVAR(TALLOC_CTX *mem_ctx, union CIMVAR *v, enum CIMTYPE_ENUMERATI
         case CIM_ARR_UINT16: RETURN_CVAR_ARRAY_STR("%u", v->a_uint16);
         case CIM_ARR_SINT32: RETURN_CVAR_ARRAY_STR("%d", v->a_sint32);
         case CIM_ARR_UINT32: RETURN_CVAR_ARRAY_STR("%u", v->a_uint32);
-        case CIM_ARR_SINT64: RETURN_CVAR_ARRAY_STR("%ld", v->a_sint64);
-        case CIM_ARR_UINT64: RETURN_CVAR_ARRAY_STR("%lu", v->a_uint64);
+        case CIM_ARR_SINT64: RETURN_CVAR_ARRAY_STR("%lld", v->a_sint64);
+        case CIM_ARR_UINT64: RETURN_CVAR_ARRAY_STR("%llu", v->a_uint64);
         case CIM_ARR_REAL32: RETURN_CVAR_ARRAY_STR("%f", v->a_real32);
         case CIM_ARR_REAL64: RETURN_CVAR_ARRAY_STR("%f", v->a_real64);
         case CIM_ARR_BOOLEAN: RETURN_CVAR_ARRAY_STR("%d", v->a_boolean);
