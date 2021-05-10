@@ -81,13 +81,14 @@ sub YYParse {
     my($retval);
 
 	_CheckParams( \@params, \%params, \@_, $self );
-print("FB\n");
+
 	if($$self{DEBUG}) {
 		_DBLoad();
 		$retval = eval '$self->_DBParse()';#Do not create stab entry on compile
         $@ and die $@;
 	}
 	else {
+print("FB\n");
 		$retval = $self->_Parse();
 	}
     $retval
