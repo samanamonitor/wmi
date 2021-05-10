@@ -579,7 +579,7 @@ sub process_file($)
 	} else {
 		require Parse::Pidl::IDL;
 		$pidl = Parse::Pidl::IDL::parse_file($idl_file, \@opt_incdirs);
-        print("FB $idl_file\n");
+        
 		require Parse::Pidl::Typelist;
 		Parse::Pidl::Typelist::LoadIdl($pidl);
 	}
