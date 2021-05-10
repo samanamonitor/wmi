@@ -81,7 +81,7 @@ sub YYParse {
     my($retval);
 
 	_CheckParams( \@params, \%params, \@_, $self );
-
+print("FB $filename\n");
 	if($$self{DEBUG}) {
 		_DBLoad();
 		$retval = eval '$self->_DBParse()';#Do not create stab entry on compile
@@ -3222,7 +3222,7 @@ sub parse_string
     $self->YYData->{INPUT} = $data;
     $self->YYData->{LINE} = 0;
     $self->YYData->{LAST_TOKEN} = "NONE";
-print("FB $filename\n");
+
 	my $idl = $self->YYParse( yylex => \&_Lexer, yyerror => \&_Error );
 
 	return CleanData($idl);
