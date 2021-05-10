@@ -23,12 +23,12 @@
 /*
 #include "librpc/gen_ndr/ndr_oxidresolver.h"
 #include "librpc/gen_ndr/ndr_oxidresolver_c.h"
-*/
 #include "librpc/gen_ndr/ndr_dcom.h"
 #include "librpc/gen_ndr/ndr_dcom_c.h"
 #include "librpc/gen_ndr/ndr_remact_c.h"
 #include "librpc/gen_ndr/ndr_epmapper_c.h"
 #include "librpc/gen_ndr/com_dcom.h"
+*/
 #include "librpc/rpc/dcerpc_table.h"
 
 #include "lib/com/dcom/dcom.h"
