@@ -264,9 +264,9 @@ sub _Parse {
 	($$token,$$value)=(undef,undef);
 	@$stack=( [ 0, undef ] );
 	$$check='';
-print("FB\n");
 
     while(1) {
+print("FB\n");
         my($actions,$act,$stateno);
 
         $stateno=$$stack[-1][0];
