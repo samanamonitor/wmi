@@ -3217,12 +3217,12 @@ sub parse_string
 	my ($data,$filename) = @_;
 
 	my $self = new Parse::Pidl::IDL;
-print("FB $filename\n");
+
     $self->YYData->{INPUT_FILENAME} = $filename;
     $self->YYData->{INPUT} = $data;
     $self->YYData->{LINE} = 0;
     $self->YYData->{LAST_TOKEN} = "NONE";
-
+print("FB $filename\n");
 	my $idl = $self->YYParse( yylex => \&_Lexer, yyerror => \&_Error );
 
 	return CleanData($idl);
