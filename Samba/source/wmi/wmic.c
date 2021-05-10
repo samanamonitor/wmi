@@ -17,7 +17,6 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/*
 #include "includes.h"
 #include "lib/cmdline/popt_common.h"
 #include "librpc/rpc/dcerpc.h"
@@ -33,7 +32,6 @@
 #include "lib/com/dcom/dcom.h"
 #include "lib/com/proto.h"
 #include "lib/com/dcom/proto.h"
-*/
 
 #include "wmi/wmi.h"
 
