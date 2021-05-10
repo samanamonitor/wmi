@@ -89,7 +89,6 @@ sub YYParse {
 	}
 	else {
 		$retval = $self->_Parse();
-print("FB\n");
 	}
     $retval
 }
@@ -246,6 +245,7 @@ sub _Parse {
      = @$self{ 'RULES', 'STATES', 'LEX', 'ERROR' };
 	my($errstatus,$nberror,$token,$value,$stack,$check,$dotpos)
      = @$self{ 'ERRST', 'NBERR', 'TOKEN', 'VALUE', 'STACK', 'CHECK', 'DOTPOS' };
+print("FB\n");
 
 #DBG>	my($debug)=$$self{DEBUG};
 #DBG>	my($dbgerror)=0;
