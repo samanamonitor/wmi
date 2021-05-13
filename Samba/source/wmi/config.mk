@@ -55,20 +55,20 @@ PRIVATE_DEPENDENCIES = \
 
 #################################
 # Start BINARY wmis
-[BINARY::wmiq]
-INSTALLDIR = BINDIR
-OBJ_FILES = wmiq.o
-PRIVATE_DEPENDENCIES = \
-                POPT_SAMBA \
-                POPT_CREDENTIALS \
-                LIBPOPT \
-		RPC_NDR_OXIDRESOLVER \
-		NDR_DCOM \
-		RPC_NDR_REMACT \
-		NDR_TABLE \
-		DCOM_PROXY_DCOM \
-		dcom \
-		wmi
+#[BINARY::wmiq]
+#INSTALLDIR = BINDIR
+#OBJ_FILES = wmiq.o
+#PRIVATE_DEPENDENCIES = \
+#                POPT_SAMBA \
+#                POPT_CREDENTIALS \
+#                LIBPOPT \
+#		RPC_NDR_OXIDRESOLVER \
+#		NDR_DCOM \
+#		RPC_NDR_REMACT \
+#		NDR_TABLE \
+#		DCOM_PROXY_DCOM \
+#		dcom \
+#		wmi
 # End BINARY wmis
 #################################
 
