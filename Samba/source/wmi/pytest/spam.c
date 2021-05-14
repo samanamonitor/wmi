@@ -31,18 +31,12 @@ long global_var=0;
 
 #include "../wmi.h"
 
-char *test_argv[9] = {
-    "pywmic",
-    "-U",
-    "samana\\fabianb",
-    "--password",
-    "Samana82.",
-    "--namespace=root\\cimv2"
-    "//192.168.0.110",
-    "SELECT * FROM Win32_PageFileUsage",
-    0
-};
-int test_argc=8;
+
+char *user = "samana\\fabianb";
+char *password = "Samana82.";
+char *hostname = "//192.168.0.110";
+char *ns = "root\\cimv2";
+char *query = "SELECT * FROM Win32_PageFileUsage";
 
 
 #define WERR_CHECK(msg) if (!W_ERROR_IS_OK(result)) { \
@@ -52,75 +46,10 @@ int test_argc=8;
                 DEBUG(1, ("OK   : %s\n", msg)); \
             }
 
-struct program_args {
-    char *hostname;
-    char *query;
-    char *ns;
-    char *delim;
-};
-
-struct program_args pargs = {};
-
-
-static void parse_args(int argc, char *argv[], struct program_args *pmyargs)
-{
-    poptContext pc;
-    int opt, i;
-
-    int argc_new;
-    char **argv_new;
-
-    struct poptOption long_options[] = {
-    POPT_AUTOHELP
-    POPT_COMMON_SAMBA
-    POPT_COMMON_CONNECTION
-    POPT_COMMON_CREDENTIALS
-    POPT_COMMON_VERSION
-        {"namespace", 0, POPT_ARG_STRING, &pmyargs->ns, 0,
-         "WMI namespace, default to root\\cimv2", 0},
-    {"delimiter", 0, POPT_ARG_STRING, &pmyargs->delim, 0,
-     "delimiter to use when querying multiple values, default to '|'", 0},
-    POPT_TABLEEND
-    };
-
-    pc = poptGetContext("wmi", argc, (const char **) argv,
-            long_options, POPT_CONTEXT_KEEP_FIRST);
-
-    poptSetOtherOptionHelp(pc, "//host query\n\nExample: wmic -U [domain/]adminuser%password //host \"select * from Win32_ComputerSystem\"");
-
-    while ((opt = poptGetNextOpt(pc)) != -1) {
-        poptPrintUsage(pc, stdout, 0);
-        poptFreeContext(pc);
-        return;
-    }
-
-    argv_new = discard_const_p(char *, poptGetArgs(pc));
-
-    argc_new = argc;
-    for (i = 0; i < argc; i++) {
-    if (argv_new[i] == NULL) {
-        argc_new = i;
-        break;
-    }
-    }
-
-    if (argc_new != 3
-    || strncmp(argv_new[1], "//", 2) != 0) {
-        poptPrintUsage(pc, stderr, 0);
-        poptFreeContext(pc);
-        return;
-    }
-
-    /* skip over leading "//" in host name */
-    pmyargs->hostname = argv_new[1] + 2;
-    pmyargs->query = argv_new[2];
-    poptFreeContext(pc);
-}
-
 static PyObject *
 spam_wmi_help(PyObject *self, PyObject *args)
 {
-    return Py_BuildValue("(ssss)", pargs.query, pargs.hostname, pargs.ns, pargs.delim);
+    return Py_BuildValue("(ssss)", query, hostname, ns, "");
 
 }
 
@@ -155,14 +84,7 @@ spam_get(PyObject *self, PyObject *args)
 static PyObject *
 spam_string(PyObject *self, PyObject *args)
 {
-    long in;
-    if(!PyArg_ParseTuple(args, "l", &in))
-        return NULL;
-
-    if( in < 0 || in > test_argc)
-        return Py_BuildValue("s", "");
-
-    return Py_BuildValue("s", test_argv[in]);
+    return Py_BuildValue("s", hostname);
 }
 
 static PyObject *
@@ -218,7 +140,6 @@ PyInit_spam(void)
     struct IWbemServices *pWS = NULL;
     NTSTATUS status;
     global_var=10;
-    parse_args(test_argc, test_argv, &pargs);
     dcerpc_init();
     dcerpc_table_init();
 
@@ -233,11 +154,11 @@ PyInit_spam(void)
     com_init_ctx(&ctx, NULL);
     dcom_client_init(ctx, cmdline_credentials);
 
-    result = WBEM_ConnectServer(ctx, pargs.hostname, pargs.ns, "samana\\fabianb", "Samana82.", 0, 0, 0, 0, &pWS);
+    result = WBEM_ConnectServer(ctx, "192.168.0.110", "root\\cimv2", "samana\\fabianb", "Samana82.", 0, 0, 0, 0, &pWS);
     WERR_CHECK("Login to remote object.");
 
     struct IEnumWbemClassObject *pEnum = NULL;
-    result = IWbemServices_ExecQuery(pWS, ctx, "WQL", pargs.query, WBEM_FLAG_RETURN_IMMEDIATELY | WBEM_FLAG_ENSURE_LOCATABLE, NULL, &pEnum);
+    result = IWbemServices_ExecQuery(pWS, ctx, "WQL", query, WBEM_FLAG_RETURN_IMMEDIATELY | WBEM_FLAG_ENSURE_LOCATABLE, NULL, &pEnum);
     WERR_CHECK("WMI query execute.");
 
     IEnumWbemClassObject_Reset(pEnum, ctx);
