@@ -108,7 +108,7 @@ static void parse_args(int argc, char *argv[], struct program_args *pmyargs)
     || strncmp(argv_new[1], "//", 2) != 0) {
         poptPrintUsage(pc, stderr, 0);
         poptFreeContext(pc);
-        exit(1);
+        return
     }
 
     /* skip over leading "//" in host name */
