@@ -233,7 +233,7 @@ PyInit_spam(void)
     com_init_ctx(&ctx, NULL);
     dcom_client_init(ctx, cmdline_credentials);
 
-    result = WBEM_ConnectServer(ctx, pargs.hostname, pargs.ns, 0, 0, 0, 0, 0, 0, &pWS);
+    result = WBEM_ConnectServer(ctx, pargs.hostname, pargs.ns, "samana\\fabianb", "Samana82.", 0, 0, 0, 0, &pWS);
     WERR_CHECK("Login to remote object.");
 
     struct IEnumWbemClassObject *pEnum = NULL;
