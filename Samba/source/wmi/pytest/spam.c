@@ -31,17 +31,18 @@ long global_var=0;
 
 #include "../wmi.h"
 
-char *test_argv[8] = {
+char *test_argv[9] = {
     "pywmic",
     "-U",
     "samana\\fabianb",
     "--password",
     "Samana82.",
+    "--namespace=root\\cimv2"
     "//192.168.0.110",
     "SELECT * FROM Win32_PageFileUsage",
     0
 };
-int test_argc=7;
+int test_argc=8;
 
 
 #define WERR_CHECK(msg) if (!W_ERROR_IS_OK(result)) { \
@@ -92,7 +93,6 @@ static void parse_args(int argc, char *argv[], struct program_args *pmyargs)
         poptFreeContext(pc);
         return;
     }
-    printf("hello\n");
 
     argv_new = discard_const_p(char *, poptGetArgs(pc));
 
