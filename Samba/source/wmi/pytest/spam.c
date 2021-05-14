@@ -10,8 +10,119 @@
 
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
+#include "includes.h"
+#include "librpc/rpc/dcerpc.h"
+#include "librpc/gen_ndr/ndr_oxidresolver.h"
+#include "librpc/gen_ndr/ndr_oxidresolver_c.h"
+#include "librpc/gen_ndr/ndr_dcom.h"
+#include "librpc/gen_ndr/ndr_dcom_c.h"
+#include "librpc/gen_ndr/ndr_remact_c.h"
+#include "librpc/gen_ndr/ndr_epmapper_c.h"
+#include "librpc/gen_ndr/com_dcom.h"
+#include "librpc/rpc/dcerpc_table.h"
+#include "lib/com/proto.h"
+
+#include "lib/cmdline/popt_common.h"
+
+#include "lib/com/dcom/dcom.h"
+#include "lib/com/dcom/proto.h"
 
 long global_var=0;
+
+#include "../wmi.h"
+
+char *test_argv[8] = {
+    "pywmic",
+    "-U",
+    "samana\\fabianb",
+    "--password",
+    "Samana82.",
+    "//192.168.0.110",
+    "SELECT * FROM Win32_PageFileUsage",
+    0
+};
+int test_argc=7;
+
+
+#define WERR_CHECK(msg) if (!W_ERROR_IS_OK(result)) { \
+                DEBUG(0, ("ERROR: %s\n", msg)); \
+                goto error; \
+            } else { \
+                DEBUG(1, ("OK   : %s\n", msg)); \
+            }
+
+struct program_args {
+    char *hostname;
+    char *query;
+    char *ns;
+    char *delim;
+};
+
+struct program_args pargs = {};
+
+
+static void parse_args(int argc, char *argv[], struct program_args *pmyargs)
+{
+    poptContext pc;
+    int opt, i;
+
+    int argc_new;
+    char **argv_new;
+
+    struct poptOption long_options[] = {
+    POPT_AUTOHELP
+    POPT_COMMON_SAMBA
+    POPT_COMMON_CONNECTION
+    POPT_COMMON_CREDENTIALS
+    POPT_COMMON_VERSION
+        {"namespace", 0, POPT_ARG_STRING, &pmyargs->ns, 0,
+         "WMI namespace, default to root\\cimv2", 0},
+    {"delimiter", 0, POPT_ARG_STRING, &pmyargs->delim, 0,
+     "delimiter to use when querying multiple values, default to '|'", 0},
+    POPT_TABLEEND
+    };
+
+    pc = poptGetContext("wmi", argc, (const char **) argv,
+            long_options, POPT_CONTEXT_KEEP_FIRST);
+
+    poptSetOtherOptionHelp(pc, "//host query\n\nExample: wmic -U [domain/]adminuser%password //host \"select * from Win32_ComputerSystem\"");
+
+    while ((opt = poptGetNextOpt(pc)) != -1) {
+        poptPrintUsage(pc, stdout, 0);
+        poptFreeContext(pc);
+        return;
+    }
+    printf("hello\n");
+
+    argv_new = discard_const_p(char *, poptGetArgs(pc));
+
+    argc_new = argc;
+    for (i = 0; i < argc; i++) {
+    if (argv_new[i] == NULL) {
+        argc_new = i;
+        break;
+    }
+    }
+
+    if (argc_new != 3
+    || strncmp(argv_new[1], "//", 2) != 0) {
+        poptPrintUsage(pc, stderr, 0);
+        poptFreeContext(pc);
+        exit(1);
+    }
+
+    /* skip over leading "//" in host name */
+    pmyargs->hostname = argv_new[1] + 2;
+    pmyargs->query = argv_new[2];
+    poptFreeContext(pc);
+}
+
+static PyObject *
+spam_wmi_help(PyObject *self, PyObject *args)
+{
+    return Py_BuildValue("(ssss)", pargs.query, pargs.hostname, pargs.ns, pargs.delim);
+
+}
 
 static PyObject *
 spam_system(PyObject *self, PyObject *args)
@@ -44,7 +155,14 @@ spam_get(PyObject *self, PyObject *args)
 static PyObject *
 spam_string(PyObject *self, PyObject *args)
 {
-    return Py_BuildValue("s", "This is a test");
+    long in;
+    if(!PyArg_ParseTuple(args, "l", &in))
+        return NULL;
+
+    if( in < 0 || in > test_argc)
+        return Py_BuildValue("s", "");
+
+    return Py_BuildValue("s", test_argv[in]);
 }
 
 static PyObject *
@@ -79,6 +197,8 @@ static PyMethodDef SpamMethods[] = {
      "Returns modifies internal variable"},
     {"get", spam_get, METH_FASTCALL,
      "Returns internal variable"},
+    {"wmi_help",  spam_wmi_help, METH_VARARGS,
+     "wmi help."},
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
@@ -94,11 +214,46 @@ static struct PyModuleDef spammodule = {
 PyMODINIT_FUNC
 PyInit_spam(void)
 {
+    WERROR result;
+    struct IWbemServices *pWS = NULL;
+    NTSTATUS status;
+    global_var=10;
+    parse_args(test_argc, test_argv, &pargs);
+    dcerpc_init();
+    dcerpc_table_init();
+
+    dcom_proxy_IUnknown_init();
+    dcom_proxy_IWbemLevel1Login_init();
+    dcom_proxy_IWbemServices_init();
+    dcom_proxy_IEnumWbemClassObject_init();
+    dcom_proxy_IRemUnknown_init();
+    dcom_proxy_IWbemFetchSmartEnum_init();
+    dcom_proxy_IWbemWCOSmartEnum_init();
+    struct com_context *ctx = NULL;
+    com_init_ctx(&ctx, NULL);
+    dcom_client_init(ctx, cmdline_credentials);
+
+    result = WBEM_ConnectServer(ctx, pargs.hostname, pargs.ns, 0, 0, 0, 0, 0, 0, &pWS);
+    WERR_CHECK("Login to remote object.");
+
+    struct IEnumWbemClassObject *pEnum = NULL;
+    result = IWbemServices_ExecQuery(pWS, ctx, "WQL", pargs.query, WBEM_FLAG_RETURN_IMMEDIATELY | WBEM_FLAG_ENSURE_LOCATABLE, NULL, &pEnum);
+    WERR_CHECK("WMI query execute.");
+
+    IEnumWbemClassObject_Reset(pEnum, ctx);
+    WERR_CHECK("Reset result of WMI query.");
+
+    return PyModule_Create(&spammodule);
+error:
+    status = werror_to_ntstatus(result);
+    fprintf(stderr, "NTSTATUS: %s - %s\n", nt_errstr(status), get_friendly_nt_error_msg(status));
+    talloc_free(ctx);
     return PyModule_Create(&spammodule);
 }
 
 int main(int argc, char *argv[])
 {
+
     wchar_t *program = Py_DecodeLocale(argv[0], NULL);
     if (program == NULL) {
         fprintf(stderr, "Fatal error: cannot decode argv[0]\n");
@@ -128,5 +283,8 @@ int main(int argc, char *argv[])
     }
 
     PyMem_RawFree(program);
+
+
+
     return 0;
 }
