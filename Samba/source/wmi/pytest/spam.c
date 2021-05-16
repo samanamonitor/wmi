@@ -157,7 +157,7 @@ PyInit_spam(void)
     struct cli_credentials *cc;
     cc = cli_credentials_init(ctx);
     cli_credentials_set_conf(cc);
-    cli_credentials_parse_string(cc, "samana\\fabianb%%Samana81.", CRED_SPECIFIED);
+    cli_credentials_parse_string(cc, "samana\\fabianb%%Samana82.", CRED_SPECIFIED);
     dcom_client_init(ctx, cc);
 
     result = WBEM_ConnectServer(ctx, hostname, ns, 0, 0, 0, 0, 0, 0, &pWS);
