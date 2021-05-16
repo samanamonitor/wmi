@@ -53,7 +53,7 @@ char *testargv[] = {
     "asdf",
     "-U",
     "samana\\fabianb",
-    "--password=\"Samana82.\"",
+    "--password=Samana82.",
     "//192.168.0.110",
     "SELECT * FROM Win32_PageFileUsage",
     0
