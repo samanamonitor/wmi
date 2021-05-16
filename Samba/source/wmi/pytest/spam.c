@@ -40,6 +40,84 @@ char *ns = "root\\cimv2";
 char *query = "SELECT * FROM Win32_PageFileUsage";
 
 
+struct program_args {
+    char *hostname;
+    char *query;
+    char *ns;
+    char *delim;
+};
+
+struct program_args testargs = {};
+
+char *testargv[] = {
+    "asdf",
+    "-U",
+    "samana\\fabianb",
+    "--password=\"Samana82.\"",
+    "//192.168.0.110",
+    "SELECT * FROM Win32_PageFileUsage",
+    0
+};
+
+int testargc = 6;
+
+static void parse_args(int argc, char *argv[], struct program_args *pmyargs)
+{
+    poptContext pc;
+    int opt, i;
+
+    int argc_new;
+    char **argv_new;
+
+    struct poptOption long_options[] = {
+    POPT_AUTOHELP
+    POPT_COMMON_SAMBA
+    POPT_COMMON_CONNECTION
+    POPT_COMMON_CREDENTIALS
+    POPT_COMMON_VERSION
+        {"namespace", 0, POPT_ARG_STRING, &pmyargs->ns, 0,
+         "WMI namespace, default to root\\cimv2", 0},
+    {"delimiter", 0, POPT_ARG_STRING, &pmyargs->delim, 0,
+     "delimiter to use when querying multiple values, default to '|'", 0},
+    POPT_TABLEEND
+    };
+
+    pc = poptGetContext("wmi", argc, (const char **) argv,
+            long_options, POPT_CONTEXT_KEEP_FIRST);
+
+    poptSetOtherOptionHelp(pc, "//host query\n\nExample: wmic -U [domain/]adminuser%password //host \"select * from Win32_ComputerSystem\"");
+
+    while ((opt = poptGetNextOpt(pc)) != -1) {
+    poptPrintUsage(pc, stdout, 0);
+    poptFreeContext(pc);
+    exit(1);
+    }
+
+    argv_new = discard_const_p(char *, poptGetArgs(pc));
+
+    argc_new = argc;
+    for (i = 0; i < argc; i++) {
+    if (argv_new[i] == NULL) {
+        argc_new = i;
+        break;
+    }
+    }
+
+    if (argc_new != 3
+    || strncmp(argv_new[1], "//", 2) != 0) {
+    poptPrintUsage(pc, stdout, 0);
+    poptFreeContext(pc);
+    exit(1);
+    }
+
+    /* skip over leading "//" in host name */
+    pmyargs->hostname = argv_new[1] + 2;
+    pmyargs->query = argv_new[2];
+    poptFreeContext(pc);
+}
+
+
+
 #define WERR_CHECK(msg) if (!W_ERROR_IS_OK(result)) { \
                 DEBUG(0, ("ERROR: %s\n", msg)); \
                 goto error; \
@@ -141,6 +219,9 @@ PyInit_spam(void)
     struct IWbemServices *pWS = NULL;
     NTSTATUS status;
     global_var=10;
+
+    parse_args(testargc, testargv, &testargs);
+
     dcerpc_init();
     dcerpc_table_init();
 
