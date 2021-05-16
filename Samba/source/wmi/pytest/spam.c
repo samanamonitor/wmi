@@ -21,6 +21,7 @@
 #include "librpc/gen_ndr/com_dcom.h"
 #include "librpc/rpc/dcerpc_table.h"
 #include "lib/com/proto.h"
+#include "auth/credentials/credentials.h"
 
 #include "lib/cmdline/popt_common.h"
 
@@ -152,10 +153,14 @@ PyInit_spam(void)
     dcom_proxy_IWbemWCOSmartEnum_init();
     struct com_context *ctx = NULL;
     com_init_ctx(&ctx, NULL);
-    dcom_client_init(ctx, cmdline_credentials);
 
-    result = WBEM_ConnectServer(ctx, hostname, ns, user, password, 0, 0, 0, 0, &pWS);
-    printf("%s\n", query);
+    struct cli_credentials *cc = cli_credentials_init("samana\\fabianb%%Samana81.");
+    cc = cli_credentials_init(ctx);
+    cli_credentials_set_conf(cc);
+    cli_credentials_parse_string(cc, "samana\\fabianb%%Samana81.", CRED_SPECIFIED);
+    dcom_client_init(ctx, cc);
+
+    result = WBEM_ConnectServer(ctx, hostname, ns, 0, 0, 0, 0, 0, 0, &pWS);
     WERR_CHECK("Login to remote object.");
 
     struct IEnumWbemClassObject *pEnum = NULL;
