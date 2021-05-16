@@ -154,7 +154,7 @@ PyInit_spam(void)
     struct com_context *ctx = NULL;
     com_init_ctx(&ctx, NULL);
 
-    struct cli_credentials *cc = cli_credentials_init("samana\\fabianb%%Samana81.");
+    struct cli_credentials *cc;
     cc = cli_credentials_init(ctx);
     cli_credentials_set_conf(cc);
     cli_credentials_parse_string(cc, "samana\\fabianb%%Samana81.", CRED_SPECIFIED);
