@@ -34,7 +34,7 @@ long global_var=0;
 
 char *user = "samana\\fabianb";
 char *password = "Samana82.";
-char *hostname = "//192.168.0.110";
+char *hostname = "192.168.0.110";
 char *ns = "root\\cimv2";
 char *query = "SELECT * FROM Win32_PageFileUsage";
 
