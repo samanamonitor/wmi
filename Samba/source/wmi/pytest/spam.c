@@ -142,7 +142,6 @@ PyInit_spam(void)
     global_var=10;
     dcerpc_init();
     dcerpc_table_init();
-    printf("%s\n", query);
 
     dcom_proxy_IUnknown_init();
     dcom_proxy_IWbemLevel1Login_init();
@@ -154,6 +153,7 @@ PyInit_spam(void)
     struct com_context *ctx = NULL;
     com_init_ctx(&ctx, NULL);
     dcom_client_init(ctx, cmdline_credentials);
+    printf("%s\n", query);
 
     result = WBEM_ConnectServer(ctx, hostname, ns, user, password, 0, 0, 0, 0, &pWS);
     WERR_CHECK("Login to remote object.");
