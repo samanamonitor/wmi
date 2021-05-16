@@ -153,10 +153,10 @@ PyInit_spam(void)
     struct com_context *ctx = NULL;
     com_init_ctx(&ctx, NULL);
     dcom_client_init(ctx, cmdline_credentials);
-    printf("%s\n", query);
 
     result = WBEM_ConnectServer(ctx, hostname, ns, user, password, 0, 0, 0, 0, &pWS);
     WERR_CHECK("Login to remote object.");
+    printf("%s\n", query);
 
     struct IEnumWbemClassObject *pEnum = NULL;
     result = IWbemServices_ExecQuery(pWS, ctx, "WQL", query, WBEM_FLAG_RETURN_IMMEDIATELY | WBEM_FLAG_ENSURE_LOCATABLE, NULL, &pEnum);
