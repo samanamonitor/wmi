@@ -158,6 +158,7 @@ PyInit_spam(void)
     WERR_CHECK("Login to remote object.");
 
     struct IEnumWbemClassObject *pEnum = NULL;
+    printf("%s", query);
     result = IWbemServices_ExecQuery(pWS, ctx, "WQL", query, WBEM_FLAG_RETURN_IMMEDIATELY | WBEM_FLAG_ENSURE_LOCATABLE, NULL, &pEnum);
     WERR_CHECK("WMI query execute.");
 
