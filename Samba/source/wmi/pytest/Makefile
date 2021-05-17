@@ -6,6 +6,7 @@ CFLAGS=-I/usr/include \
 	-I../../lib/replace \
 	-I../../lib \
 	-I../../lib/popt \
+	-I../ \
 	-DNDEBUG -g -O3 -Wall \
 	-Wstrict-prototypes -fPIC \
 	-DMAJOR_VERSION=1 -DMINOR_VERSION=0
