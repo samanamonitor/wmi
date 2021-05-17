@@ -143,6 +143,11 @@ pywmi_open(PyObject *self, PyObject *args)
 		WERR_CHECK("Hostname required. Cannot continue.");
 	}
 
+	if(pWS != NULL) {
+		W_ERROR_V(result) = 0x5;
+		WERR_CHECK("Connection cannot be reused. Close previous connection before continuing.");
+	}
+
 	result = WBEM_ConnectServer(ctx, hostname, ns, userdomain, password, 0, 0, 0, 0, &pWS);
 	WERR_CHECK("Login to remote object.");
 
@@ -196,6 +201,8 @@ pywmi_data(PyObject *self, PyObject *args)
 			printf("\n");
 		}
 	} while (ret == cnt);
+	talloc_free(pEnum);
+	pEnum = NULL;
 	return Py_BuildValue("i", status);
 
 error:
@@ -236,9 +243,14 @@ pywmi_query(PyObject *self, PyObject *args)
 		WERR_CHECK("Query required. Cannot continue.");
 	}
 
+	if(pEnum != NULL) {
+		talloc_free(pEnum);
+		pEnum = NULL;
+	}
+
 	result = IWbemServices_ExecQuery(pWS, ctx, "WQL", query, WBEM_FLAG_RETURN_IMMEDIATELY | WBEM_FLAG_ENSURE_LOCATABLE, NULL, &pEnum);
 	WERR_CHECK("WMI query execute.");
-	
+
 	return Py_BuildValue("i", 0);
 
 error:
