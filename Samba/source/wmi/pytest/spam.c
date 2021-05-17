@@ -32,7 +32,7 @@ long global_var=0;
 
 #include "../wmi.h"
 
-
+char *userdomain = "samana\\fabianb";
 char *user = "fabianb";
 char *domain = "samana";
 char *password = "Samana82.";
@@ -310,21 +310,21 @@ PyInit_spam(void)
     struct com_context *ctx = NULL;
     com_init_ctx(&ctx, NULL);
 
+/*
     struct cli_credentials *cc;
     cc = cli_credentials_init(ctx);
     cli_credentials_set_conf(cc);
     cli_credentials_set_password(cc, password, CRED_SPECIFIED);
     cli_credentials_set_domain(cc, domain, CRED_SPECIFIED);
     cli_credentials_set_username(cc, user, CRED_SPECIFIED);
-/*
 
     cli_credentials_parse_string(cc, "samana\\fabianb%Samana82.", CRED_SPECIFIED);
     printcred(cc);
 */
 
-    dcom_client_init(ctx, cc);
+    dcom_client_init(ctx, NULL);
 
-    result = WBEM_ConnectServer(ctx, hostname, ns, 0, 0, 0, 0, 0, 0, &pWS);
+    result = WBEM_ConnectServer(ctx, hostname, ns, userdomain, password, 0, 0, 0, 0, &pWS);
     WERR_CHECK("Login to remote object.");
 
     struct IEnumWbemClassObject *pEnum = NULL;
