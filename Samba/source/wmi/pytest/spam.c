@@ -212,6 +212,77 @@ static struct PyModuleDef spammodule = {
     SpamMethods
 };
 
+#define NULLSTR(x) x == NULL ? "(null)" : x
+
+void printcred(struct cli_credentials *c)
+{
+    if(c == NULL) {
+        printf("Credentials not initialized\n");
+        return;
+    }
+    printf("--------\n");
+    printf("workstation_obtained: %d\n", c->workstation_obtained);
+    printf("username_obtained: %d\n", c->username_obtained);
+    printf("password_obtained: %d\n", c->password_obtained);
+    printf("domain_obtained: %d\n", c->domain_obtained);
+    printf("realm_obtained: %d\n", c->realm_obtained);
+    printf("ccache_obtained: %d\n", c->ccache_obtained);
+    printf("client_gss_creds_obtained: %d\n", c->client_gss_creds_obtained);
+    printf("principal_obtained: %d\n", c->principal_obtained);
+    printf("keytab_obtained: %d\n", c->keytab_obtained);
+    printf("server_gss_creds_obtained: %d\n", c->server_gss_creds_obtained);
+
+    printf("workstation: %s\n", NULLSTR(c->workstation));
+    printf("username: %s\n", NULLSTR(c->username));
+    printf("password: %s\n", NULLSTR(c->password));
+    printf("old_password: %s\n", NULLSTR(c->old_password));
+    printf("domain: %s\n", NULLSTR(c->domain));
+    printf("realm: 0x%08x\n", c->realm);
+    printf("principal: 0x%08x\n", c->principal);
+    printf("salt_principal: %s\n", NULLSTR(c->salt_principal));
+
+    printf("bind_dn: %s\n", NULLSTR(c->bind_dn));
+
+    printf("nt_hash: 0x%08x\n", c->nt_hash);
+    printf("ccache: 0x%08x\n", c->ccache);
+    printf("client_gss_creds: 0x%08x\n", c->client_gss_creds);
+    printf("keytab: 0x%08x\n", c->keytab);
+    printf("server_gss_creds: 0x%08x\n", c->server_gss_creds);
+
+    printf("workstation_cb: 0x%08x\n", c-> workstation_cb);
+    printf("password_cb: 0x%08x\n", c-> password_cb);
+    printf("username_cb: 0x%08x\n", c-> username_cb);
+    printf("domain_cb: 0x%08x\n", c-> domain_cb);
+    printf("realm_cb: 0x%08x\n", c-> realm_cb);
+    printf("principal_cb: 0x%08x\n", c-> principal_cb);
+
+    /* Private handle for the callback routines to use */
+    printf("priv_data: 0x%08x\n", c->priv_data);
+    printf("netlogon_creds: 0x%08x\n", c->netlogon_creds);
+    printf("secure_channel_type: %d\n", c->secure_channel_type);
+    printf("kvno: %d\n", c->kvno);
+
+    printf("smb_krb5_context: 0x%08x\n", c->smb_krb5_context);
+
+    /* We are flagged to get machine account details from the
+     * secrets.ldb when we are asked for a username or password */
+
+    printf("machine_account_pending: %d\n", c->machine_account_pending);
+    
+    /* Is this a machine account? */
+    printf("machine_account: %d\n", c->machine_account);
+
+    /* Should we be trying to use kerberos? */
+    printf("use_kerberos: %d\n", c->use_kerberos);
+
+    /* Number of retries left before bailing out */
+    printf("tries: %d\n", c->tries);
+
+    /* Whether any callback is currently running */
+    printf("callback_running: %d\n", c->callback_running);
+    printf("--------\n");
+}
+
 PyMODINIT_FUNC
 PyInit_spam(void)
 {
@@ -220,8 +291,10 @@ PyInit_spam(void)
     NTSTATUS status;
     global_var=10;
 
+    printf("FB - 0x%08x\n", cmdline_credentials);
     parse_args(testargc, testargv, &testargs);
-
+    printf("FB - 0x%08x\n", cmdline_credentials);
+    printcred(cmdline_credentials);
     dcerpc_init();
     dcerpc_table_init();
 
@@ -234,13 +307,14 @@ PyInit_spam(void)
     dcom_proxy_IWbemWCOSmartEnum_init();
     struct com_context *ctx = NULL;
     com_init_ctx(&ctx, NULL);
-    /*
+
     struct cli_credentials *cc;
     cc = cli_credentials_init(ctx);
     cli_credentials_set_conf(cc);
-    cli_credentials_parse_string(cc, "samana\\fabianb%%Samana82.", CRED_SPECIFIED);
-    */
-    dcom_client_init(ctx, cmdline_credentials);
+    cli_credentials_parse_string(cc, "samana\\fabianb%Samana82.", CRED_SPECIFIED);
+    printcred(cc);
+
+    dcom_client_init(ctx, cc);
 
     result = WBEM_ConnectServer(ctx, hostname, ns, 0, 0, 0, 0, 0, 0, &pWS);
     WERR_CHECK("Login to remote object.");
