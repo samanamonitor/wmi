@@ -250,6 +250,7 @@ static PyMethodDef PyWMIMethods[] = {
 	PYTHON_FUNCDEF(open, "Connect to the server"),
 	PYTHON_FUNCDEF(query, "Send Query to the server"),
 	PYTHON_FUNCDEF(data, "Get data from server"),
+	PYTHON_FUNCDEF(close, "Disconnect from server"),
 	{NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
