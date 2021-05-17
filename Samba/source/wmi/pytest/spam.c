@@ -293,8 +293,8 @@ PyInit_spam(void)
 
 /*
     printf("FB - 0x%08x\n", cmdline_credentials);
-*/
     parse_args(testargc, testargv, &testargs);
+*/
 /*
     printf("FB - 0x%08x\n", cmdline_credentials);
     printcred(cmdline_credentials);
