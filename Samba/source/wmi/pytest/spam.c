@@ -291,10 +291,14 @@ PyInit_spam(void)
     NTSTATUS status;
     global_var=10;
 
+/*
     printf("FB - 0x%08x\n", cmdline_credentials);
+*/
     parse_args(testargc, testargv, &testargs);
+/*
     printf("FB - 0x%08x\n", cmdline_credentials);
     printcred(cmdline_credentials);
+*/
     dcerpc_init();
     dcerpc_table_init();
 
@@ -312,7 +316,9 @@ PyInit_spam(void)
     cc = cli_credentials_init(ctx);
     cli_credentials_set_conf(cc);
     cli_credentials_parse_string(cc, "samana\\fabianb%Samana82.", CRED_SPECIFIED);
+/*
     printcred(cc);
+*/
 
     dcom_client_init(ctx, cc);
 
