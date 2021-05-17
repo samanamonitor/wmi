@@ -143,6 +143,7 @@ pywmi_open(PyObject *self, PyObject *args)
 
 	result = WBEM_ConnectServer(ctx, hostname, ns, userdomain, password, 0, 0, 0, 0, &pWS);
 	WERR_CHECK("Login to remote object.");
+	talloc_free(pWS);
 	return Py_BuildValue("i", 0);
 
 error:
