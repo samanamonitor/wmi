@@ -80,13 +80,15 @@ static void parse_args(int argc, char *argv[], struct program_args *pmyargs)
     pc = poptGetContext("wmi", argc, (const char **) argv,
             long_options, POPT_CONTEXT_KEEP_FIRST);
 
+/*
     poptSetOtherOptionHelp(pc, "//host query\n\nExample: wmic -U [domain/]adminuser%password //host \"select * from Win32_ComputerSystem\"");
-    while ((opt = poptGetNextOpt(pc)) != -1) {
+*/
+    opt = poptGetNextOpt(pc);
+    if (opt != -1) {
         poptPrintUsage(pc, stdout, 0);
         poptFreeContext(pc);
         exit(1);
     }
-    printf("FB - opt=%d\n", opt);
 
     poptFreeContext(pc);
 }
