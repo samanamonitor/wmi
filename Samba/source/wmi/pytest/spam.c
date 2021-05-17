@@ -33,7 +33,8 @@ long global_var=0;
 #include "../wmi.h"
 
 
-char *user = "samana\\fabianb";
+char *user = "fabianb";
+char *domain = "samana";
 char *password = "Samana82.";
 char *hostname = "192.168.0.110";
 char *ns = "root\\cimv2";
@@ -51,15 +52,17 @@ struct program_args testargs = {};
 
 char *testargv[] = {
     "asdf",
+/*
     "-U",
     "samana\\fabianb",
     "--password=Samana82.",
+*/
     "//192.168.0.110",
     "SELECT * FROM Win32_PageFileUsage",
     0
 };
 
-int testargc = 6;
+int testargc = 3;
 
 static void parse_args(int argc, char *argv[], struct program_args *pmyargs)
 {
@@ -237,8 +240,8 @@ void printcred(struct cli_credentials *c)
     printf("password: %s\n", NULLSTR(c->password));
     printf("old_password: %s\n", NULLSTR(c->old_password));
     printf("domain: %s\n", NULLSTR(c->domain));
-    printf("realm: 0x%08x\n", c->realm);
-    printf("principal: 0x%08x\n", c->principal);
+    printf("realm: 0x%08x\n", (unsigned int) c->realm);
+    printf("principal: 0x%08x\n", (unsigned int) c->principal);
     printf("salt_principal: %s\n", NULLSTR(c->salt_principal));
 
     printf("bind_dn: %s\n", NULLSTR(c->bind_dn));
@@ -315,8 +318,12 @@ PyInit_spam(void)
     struct cli_credentials *cc;
     cc = cli_credentials_init(ctx);
     cli_credentials_set_conf(cc);
-    cli_credentials_parse_string(cc, "samana\\fabianb%Samana82.", CRED_SPECIFIED);
+    cli_credentials_set_password(cc, password, CRED_SPECIFIED);
+    cli_credentials_set_domain(cc, domain, CRED_SPECIFIED);
+    cli_credentials_set_username(cc, user, CRED_SPECIFIED);
 /*
+
+    cli_credentials_parse_string(cc, "samana\\fabianb%Samana82.", CRED_SPECIFIED);
     printcred(cc);
 */
 
