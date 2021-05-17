@@ -86,6 +86,7 @@ static void parse_args(int argc, char *argv[], struct program_args *pmyargs)
         poptFreeContext(pc);
         exit(1);
     }
+    printf("FB - opt=%d\n", opt);
 
     poptFreeContext(pc);
 }
