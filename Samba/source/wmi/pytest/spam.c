@@ -65,11 +65,13 @@ static void parse_args(int argc, char *argv[], struct program_args *pmyargs)
     int opt;
 
     struct poptOption long_options[] = {
+/*
     POPT_AUTOHELP
     POPT_COMMON_SAMBA
     POPT_COMMON_CONNECTION
     POPT_COMMON_CREDENTIALS
     POPT_COMMON_VERSION
+*/
         {"namespace", 0, POPT_ARG_STRING, &pmyargs->ns, 0,
          "WMI namespace, default to root\\cimv2", 0},
     {"delimiter", 0, POPT_ARG_STRING, &pmyargs->delim, 0,
