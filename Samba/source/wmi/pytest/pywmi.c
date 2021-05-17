@@ -1,10 +1,10 @@
 /*
-    Ubuntu required packages: libpython3-dev
-    Build command:
-    gcc -DNDEBUG -g -O3 -Wall -Wstrict-prototypes -fPIC -DMAJOR_VERSION=1 -DMINOR_VERSION=0 \
-        -I/usr/include -I/usr/include/python3.6m -c spam.c -o spam.o
+	Ubuntu required packages: libpython3-dev
+	Build command:
+	gcc -DNDEBUG -g -O3 -Wall -Wstrict-prototypes -fPIC -DMAJOR_VERSION=1 -DMINOR_VERSION=0 \
+		-I/usr/include -I/usr/include/python3.6m -c spam.c -o spam.o
 
-    gcc -shared spam.o -L/usr/lib -o spam.so
+	gcc -shared spam.o -L/usr/lib -o spam.so
 
 */
 
@@ -18,6 +18,8 @@
 #include "lib/com/dcom/dcom.h"
 
 #include "wmi.h"
+#include "proto.h"
+#define PYMODULE "pywmi"
 
 struct com_context *ctx = NULL;
 struct IWbemServices *pWS = NULL;
@@ -31,183 +33,232 @@ char *ns = "root\\cimv2";
 char *query = "SELECT * FROM Win32_PageFileUsage";
 
 #define PYTHON_FUNCDEF(funcname, description) \
-    {                                         \
-        #funcname,                            \
-        pywmi_ ## funcname, METH_VARARGS,     \
-        "\"" #description "\""                \
-    }
+	{                                         \
+		#funcname,                            \
+		pywmi_ ## funcname, METH_VARARGS,     \
+		"\"" #description "\""                \
+	}
 
 #define WERR_CHECK(msg) if (!W_ERROR_IS_OK(result)) { \
-                DEBUG(0, ("ERROR: %s\n", msg));       \
-                goto error;                           \
-            } else {                                  \
-                DEBUG(1, ("OK   : %s\n", msg));       \
-            }
+				DEBUG(0, ("ERROR: %s\n", msg));       \
+				goto error;                           \
+			} else {                                  \
+				DEBUG(1, ("OK   : %s\n", msg));       \
+			}
 
 
 static PyObject *
 pywmi_connect(PyObject *self, PyObject *args)
 {
-    WERROR result;
-    NTSTATUS status;
+	WERROR result;
+	NTSTATUS status;
 
-    if(ctx == NULL) {
-        /* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
-        W_ERROR_V(result) = 0x5;
-        WERR_CHECK("CTX has not been initialized. Cannot continue.");        
-    }
+	if(ctx == NULL) {
+		/* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
+		W_ERROR_V(result) = 0x5;
+		WERR_CHECK("CTX has not been initialized. Cannot continue.");        
+	}
 
-    if(userdomain == NULL){
-        /* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
-        W_ERROR_V(result) = 0x5;
-        WERR_CHECK("Username and domain required. Cannot continue.");
-    }
+	if(userdomain == NULL){
+		/* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
+		W_ERROR_V(result) = 0x5;
+		WERR_CHECK("Username and domain required. Cannot continue.");
+	}
 
-    if(ns == NULL) {
-        /* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
-        W_ERROR_V(result) = 0x5;
-        WERR_CHECK("WMI Namespace required. Cannot continue.");
-    }
+	if(ns == NULL) {
+		/* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
+		W_ERROR_V(result) = 0x5;
+		WERR_CHECK("WMI Namespace required. Cannot continue.");
+	}
 
-    if(password == NULL) {
-        /* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
-        W_ERROR_V(result) = 0x5;
-        WERR_CHECK("Password required. Cannot continue.");
-    }
+	if(password == NULL) {
+		/* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
+		W_ERROR_V(result) = 0x5;
+		WERR_CHECK("Password required. Cannot continue.");
+	}
 
-    if(hostname == NULL) {
-        /* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
-        W_ERROR_V(result) = 0x5;
-        WERR_CHECK("Hostname required. Cannot continue.");
-    }
+	if(hostname == NULL) {
+		/* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
+		W_ERROR_V(result) = 0x5;
+		WERR_CHECK("Hostname required. Cannot continue.");
+	}
 
-    result = WBEM_ConnectServer(ctx, hostname, ns, userdomain, password, 0, 0, 0, 0, &pWS);
-    WERR_CHECK("Login to remote object.");
-    return Py_BuildValue("i", 0);
+	result = WBEM_ConnectServer(ctx, hostname, ns, userdomain, password, 0, 0, 0, 0, &pWS);
+	WERR_CHECK("Login to remote object.");
+	return Py_BuildValue("i", 0);
 
 error:
-    status = werror_to_ntstatus(result);
-    fprintf(stderr, "NTSTATUS: %s - %s\n", nt_errstr(status), get_friendly_nt_error_msg(status));
-    talloc_free(ctx);
-    return Py_BuildValue("i", status);
+	status = werror_to_ntstatus(result);
+	fprintf(stderr, "NTSTATUS: %s - %s\n", nt_errstr(status), get_friendly_nt_error_msg(status));
+	talloc_free(ctx);
+	return Py_BuildValue("i", status);
+}
+
+static PyObject *
+pywmi_data(PyObject *self, PyObject *args)
+{
+	WERROR result;
+	NTSTATUS status;
+	uint32_t cnt = 5, ret;
+	char *class_name = NULL;
+
+	result = IEnumWbemClassObject_Reset(pEnum, ctx);
+	WERR_CHECK("Reset result of WMI query.");
+
+	do {
+		uint32_t i, j;
+		struct WbemClassObject *co[cnt];
+
+		result = IEnumWbemClassObject_SmartNext(pEnum, ctx, 0xFFFFFFFF, cnt, co, &ret);
+		/* WERR_BADFUNC is OK, it means only that there is less returned objects than requested */
+		if (!W_ERROR_EQUAL(result, WERR_BADFUNC)) {
+			WERR_CHECK("Retrieve result data.");
+		} else {
+			DEBUG(1, ("OK   : Retrieved less objects than requested (it is normal).\n"));
+		}
+		if (!ret) break;
+
+		for (i = 0; i < ret; ++i) {
+			if (!class_name || strcmp(co[i]->obj_class->__CLASS, class_name)) {
+				if (class_name) talloc_free(class_name);
+				class_name = talloc_strdup(ctx, co[i]->obj_class->__CLASS);
+				printf("CLASS: %s\n", class_name);
+				for (j = 0; j < co[i]->obj_class->__PROPERTY_COUNT; ++j)
+					printf("%s%s", "|", co[i]->obj_class->properties[j].name);
+				printf("\n");
+			}
+			for (j = 0; j < co[i]->obj_class->__PROPERTY_COUNT; ++j) {
+				char *s;
+				s = string_CIMVAR(ctx, &co[i]->instance->data[j], co[i]->obj_class->properties[j].desc->cimtype & CIM_TYPEMASK);
+				printf("%s%s", "|", s);
+			}
+			printf("\n");
+		}
+	} while (ret == cnt);
+	return Py_BuildValue("i", status);
+
+error:
+	status = werror_to_ntstatus(result);
+	fprintf(stderr, "NTSTATUS: %s - %s\n", nt_errstr(status), get_friendly_nt_error_msg(status));
+	talloc_free(ctx);
+	return Py_BuildValue("i", status);
+
 }
 
 static PyObject *
 pywmi_query(PyObject *self, PyObject *args)
 {
-    WERROR result;
-    NTSTATUS status;
+	WERROR result;
+	NTSTATUS status;
 
 /*
-    const char *query;
-    if(!PyArg_ParseTuple(args, "s", &query))
-        return Py_BuildValue("i", 0);
+	const char *query;
+	if(!PyArg_ParseTuple(args, "s", &query))
+		return Py_BuildValue("i", 0);
 */
 
-    if(ctx == NULL) {
-        /* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
-        W_ERROR_V(result) = 0x5;
-        WERR_CHECK("CTX has not been initialized. Cannot continue.");        
-    }
+	if(ctx == NULL) {
+		/* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
+		W_ERROR_V(result) = 0x5;
+		WERR_CHECK("CTX has not been initialized. Cannot continue.");        
+	}
 
-    if(pWS == NULL) {
-        /* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
-        W_ERROR_V(result) = 0x5;
-        WERR_CHECK("Connection has not been established with host. Cannot continue.");        
-    }
+	if(pWS == NULL) {
+		/* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
+		W_ERROR_V(result) = 0x5;
+		WERR_CHECK("Connection has not been established with host. Cannot continue.");        
+	}
 
-    if(query == NULL) {
-        /* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
-        W_ERROR_V(result) = 0x5;
-        WERR_CHECK("Query required. Cannot continue.");
-    }
+	if(query == NULL) {
+		/* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
+		W_ERROR_V(result) = 0x5;
+		WERR_CHECK("Query required. Cannot continue.");
+	}
 
-    result = IWbemServices_ExecQuery(pWS, ctx, "WQL", query, WBEM_FLAG_RETURN_IMMEDIATELY | WBEM_FLAG_ENSURE_LOCATABLE, NULL, &pEnum);
-    WERR_CHECK("WMI query execute.");
+	result = IWbemServices_ExecQuery(pWS, ctx, "WQL", query, WBEM_FLAG_RETURN_IMMEDIATELY | WBEM_FLAG_ENSURE_LOCATABLE, NULL, &pEnum);
+	WERR_CHECK("WMI query execute.");
 
-    IEnumWbemClassObject_Reset(pEnum, ctx);
-    WERR_CHECK("Reset result of WMI query.");
-
-    return Py_BuildValue("i", 0);
+	return Py_BuildValue("i", 0);
 
 error:
-    status = werror_to_ntstatus(result);
-    fprintf(stderr, "NTSTATUS: %s - %s\n", nt_errstr(status), get_friendly_nt_error_msg(status));
-    talloc_free(ctx);
-    return Py_BuildValue("i", status);
+	status = werror_to_ntstatus(result);
+	fprintf(stderr, "NTSTATUS: %s - %s\n", nt_errstr(status), get_friendly_nt_error_msg(status));
+	talloc_free(ctx);
+	return Py_BuildValue("i", status);
 
 }
 
 static PyMethodDef PyWMIMethods[] = {
-    PYTHON_FUNCDEF(connect, "Connect to the server"),
-    PYTHON_FUNCDEF(query, "Send Query to the server"),
-    {NULL, NULL, 0, NULL}        /* Sentinel */
+	PYTHON_FUNCDEF(connect, "Connect to the server"),
+	PYTHON_FUNCDEF(query, "Send Query to the server"),
+	PYTHON_FUNCDEF(data, "Get data from server"),
+	{NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
 static struct PyModuleDef pywmimodule = {
-    PyModuleDef_HEAD_INIT,
-    "pywmi",   /* name of module */
-    "PyWMI Documentation",     /* module documentation, may be NULL */
-    -1,       /* size of per-interpreter state of the module,
-                 or -1 if the module keeps state in global variables. */
-    PyWMIMethods
+	PyModuleDef_HEAD_INIT,
+	PYMODULE,   /* name of module */
+	"PyWMI Documentation",     /* module documentation, may be NULL */
+	-1,       /* size of per-interpreter state of the module,
+				 or -1 if the module keeps state in global variables. */
+	PyWMIMethods
 };
 
 PyMODINIT_FUNC
 PyInit_pywmi(void)
 {
-    fault_setup("pywmi");
-    setup_logging("pywmi", DEBUG_STDOUT);
-    lp_load();
+	fault_setup(PYMODULE);
+	setup_logging(PYMODULE, DEBUG_STDOUT);
+	lp_load();
 
-    dcerpc_init();
-    dcerpc_table_init();
+	dcerpc_init();
+	dcerpc_table_init();
 
-    dcom_proxy_IUnknown_init();
-    dcom_proxy_IWbemLevel1Login_init();
-    dcom_proxy_IWbemServices_init();
-    dcom_proxy_IEnumWbemClassObject_init();
-    dcom_proxy_IRemUnknown_init();
-    dcom_proxy_IWbemFetchSmartEnum_init();
-    dcom_proxy_IWbemWCOSmartEnum_init();
-    com_init_ctx(&ctx, NULL);
-    dcom_client_init(ctx, NULL);
+	dcom_proxy_IUnknown_init();
+	dcom_proxy_IWbemLevel1Login_init();
+	dcom_proxy_IWbemServices_init();
+	dcom_proxy_IEnumWbemClassObject_init();
+	dcom_proxy_IRemUnknown_init();
+	dcom_proxy_IWbemFetchSmartEnum_init();
+	dcom_proxy_IWbemWCOSmartEnum_init();
+	com_init_ctx(&ctx, NULL);
+	dcom_client_init(ctx, NULL);
 
-    return PyModule_Create(&pywmimodule);
+	return PyModule_Create(&pywmimodule);
 }
 
 int main(int argc, char *argv[])
 {
 
-    wchar_t *program = Py_DecodeLocale(argv[0], NULL);
-    if (program == NULL) {
-        fprintf(stderr, "Fatal error: cannot decode argv[0]\n");
-        exit(1);
-    }
+	wchar_t *program = Py_DecodeLocale(argv[0], NULL);
+	if (program == NULL) {
+		fprintf(stderr, "Fatal error: cannot decode argv[0]\n");
+		exit(1);
+	}
 
-    /* Add a built-in module, before Py_Initialize */
-    if (PyImport_AppendInittab("pywmi", PyInit_pywmi) == -1) {
-        fprintf(stderr, "Error: could not extend in-built modules table\n");
-        exit(1);
-    }
+	/* Add a built-in module, before Py_Initialize */
+	if (PyImport_AppendInittab(PYMODULE, PyInit_pywmi) == -1) {
+		fprintf(stderr, "Error: could not extend in-built modules table\n");
+		exit(1);
+	}
 
-    /* Pass argv[0] to the Python interpreter */
-    Py_SetProgramName(program);
+	/* Pass argv[0] to the Python interpreter */
+	Py_SetProgramName(program);
 
-    /* Initialize the Python interpreter.  Required.
-       If this step fails, it will be a fatal error. */
-    Py_Initialize();
+	/* Initialize the Python interpreter.  Required.
+	   If this step fails, it will be a fatal error. */
+	Py_Initialize();
 
-    /* Optionally import the module; alternatively,
-       import can be deferred until the embedded script
-       imports it. */
-    PyObject *pmodule = PyImport_ImportModule("pywmi");
-    if (!pmodule) {
-        PyErr_Print();
-        fprintf(stderr, "Error: could not import module 'pywmi'\n");
-    }
+	/* Optionally import the module; alternatively,
+	   import can be deferred until the embedded script
+	   imports it. */
+	PyObject *pmodule = PyImport_ImportModule(PYMODULE);
+	if (!pmodule) {
+		PyErr_Print();
+		fprintf(stderr, "Error: could not import module '" PYMODULE "'\n");
+	}
 
-    PyMem_RawFree(program);
+	PyMem_RawFree(program);
 
-    return 0;
+	return 0;
 }
