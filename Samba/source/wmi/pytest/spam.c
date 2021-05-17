@@ -52,7 +52,7 @@ struct program_args testargs = {};
 
 char *testargv[] = {
     "",
-    "",
+    "//",
     "",
     0
 };
