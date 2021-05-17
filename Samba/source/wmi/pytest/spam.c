@@ -84,12 +84,12 @@ static void parse_args(int argc, char *argv[], struct program_args *pmyargs)
             long_options, POPT_CONTEXT_KEEP_FIRST);
 
     poptSetOtherOptionHelp(pc, "//host query\n\nExample: wmic -U [domain/]adminuser%password //host \"select * from Win32_ComputerSystem\"");
-goto end;
     while ((opt = poptGetNextOpt(pc)) != -1) {
     poptPrintUsage(pc, stdout, 0);
     poptFreeContext(pc);
     exit(1);
     }
+goto end;
 
     argv_new = discard_const_p(char *, poptGetArgs(pc));
 
