@@ -66,8 +66,8 @@ static void parse_args(int argc, char *argv[], struct program_args *pmyargs)
 
     struct poptOption long_options[] = {
     POPT_AUTOHELP
-/*
     POPT_COMMON_SAMBA
+/*
     POPT_COMMON_CONNECTION
     POPT_COMMON_CREDENTIALS
     POPT_COMMON_VERSION
