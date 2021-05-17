@@ -24,6 +24,8 @@
 struct com_context *ctx = NULL;
 struct IWbemServices *pWS = NULL;
 struct IEnumWbemClassObject *pEnum = NULL;
+struct cli_credentials *server_credentials;
+
 char *userdomain = "samana\\fabianb";
 char *user = "fabianb";
 char *domain = "samana";
