@@ -442,7 +442,6 @@ void *_talloc_steal(const void *new_ctx, const void *ptr)
 	if (unlikely(new_ctx == NULL)) {
 		new_ctx = null_context;
 	}
-printf("FB - 0x%08x\n", new_ctx);
 	tc = talloc_chunk_from_ptr(ptr);
 
 	if (unlikely(new_ctx == NULL)) {
