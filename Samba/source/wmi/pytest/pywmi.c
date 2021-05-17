@@ -101,7 +101,11 @@ static PyObject *
 pywmi_close(PyObject *self, PyObject *args)
 {
 	talloc_free(ctx);
+	talloc_free(pWS);
+	talloc_free(pEnum);
 	ctx = NULL;
+	pWS = NULL;
+	pEnum = NULL;
 	return Py_BuildValue("i", 0);
 }
 
@@ -143,7 +147,7 @@ pywmi_open(PyObject *self, PyObject *args)
 
 	result = WBEM_ConnectServer(ctx, hostname, ns, userdomain, password, 0, 0, 0, 0, &pWS);
 	WERR_CHECK("Login to remote object.");
-	talloc_free(pWS);
+
 	return Py_BuildValue("i", 0);
 
 error:
@@ -236,7 +240,7 @@ pywmi_query(PyObject *self, PyObject *args)
 
 	result = IWbemServices_ExecQuery(pWS, ctx, "WQL", query, WBEM_FLAG_RETURN_IMMEDIATELY | WBEM_FLAG_ENSURE_LOCATABLE, NULL, &pEnum);
 	WERR_CHECK("WMI query execute.");
-
+	
 	return Py_BuildValue("i", 0);
 
 error:
