@@ -98,7 +98,15 @@ char *string_CIMVAR(TALLOC_CTX *mem_ctx, union CIMVAR *v, enum CIMTYPE_ENUMERATI
 }
 
 static PyObject *
-pywmi_connect(PyObject *self, PyObject *args)
+pywmi_close(PyObject *self, PyObject *args)
+{
+	talloc_free(ctx);
+	ctx = NULL;
+	return Py_BuildValue("i", 0);
+}
+
+static PyObject *
+pywmi_open(PyObject *self, PyObject *args)
 {
 	WERROR result;
 	NTSTATUS status;
@@ -239,7 +247,7 @@ error:
 }
 
 static PyMethodDef PyWMIMethods[] = {
-	PYTHON_FUNCDEF(connect, "Connect to the server"),
+	PYTHON_FUNCDEF(open, "Connect to the server"),
 	PYTHON_FUNCDEF(query, "Send Query to the server"),
 	PYTHON_FUNCDEF(data, "Get data from server"),
 	{NULL, NULL, 0, NULL}        /* Sentinel */

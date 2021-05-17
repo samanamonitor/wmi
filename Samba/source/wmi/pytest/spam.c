@@ -8,25 +8,14 @@
 
 */
 
-#define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include "includes.h"
-#include "librpc/rpc/dcerpc.h"
-#include "librpc/gen_ndr/ndr_oxidresolver.h"
-#include "librpc/gen_ndr/ndr_oxidresolver_c.h"
-#include "librpc/gen_ndr/ndr_dcom.h"
-#include "librpc/gen_ndr/ndr_dcom_c.h"
-#include "librpc/gen_ndr/ndr_remact_c.h"
 #include "librpc/gen_ndr/ndr_epmapper_c.h"
 #include "librpc/gen_ndr/com_dcom.h"
 #include "librpc/rpc/dcerpc_table.h"
 #include "lib/com/proto.h"
-#include "auth/credentials/credentials.h"
-
-#include "lib/cmdline/popt_common.h"
 
 #include "lib/com/dcom/dcom.h"
-#include "lib/com/dcom/proto.h"
 
 long global_var=0;
 
@@ -211,8 +200,6 @@ int main(int argc, char *argv[])
     }
 
     PyMem_RawFree(program);
-
-
 
     return 0;
 }

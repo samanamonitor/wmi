@@ -148,7 +148,7 @@ WERROR WBEM_ConnectServer_recv(struct composite_context *c,
     {
         struct wbem_connect_context *s = talloc_get_type(c->private_data,
                 struct wbem_connect_context);
-
+printf("FB - ConnectServer_recv\n");
         talloc_steal(parent_ctx, s->services);
         *services = s->services;
 
