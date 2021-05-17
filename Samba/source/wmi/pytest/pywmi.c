@@ -100,10 +100,8 @@ char *string_CIMVAR(TALLOC_CTX *mem_ctx, union CIMVAR *v, enum CIMTYPE_ENUMERATI
 static PyObject *
 pywmi_close(PyObject *self, PyObject *args)
 {
-	talloc_free(ctx);
 	talloc_free(pWS);
 	talloc_free(pEnum);
-	ctx = NULL;
 	pWS = NULL;
 	pEnum = NULL;
 	return Py_BuildValue("i", 0);
