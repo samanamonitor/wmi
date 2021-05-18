@@ -172,7 +172,7 @@ pywmi_data(PyObject *self, PyObject *args)
 
 	result = IEnumWbemClassObject_Reset(pEnum, ctx);
 	WERR_CHECK("Reset result of WMI query.");
-
+	PyObject *wmi_reclist = Py_BuildValue("[]");;
 	do {
 		uint32_t i, j;
 		struct WbemClassObject *co[cnt];
@@ -185,27 +185,26 @@ pywmi_data(PyObject *self, PyObject *args)
 			DEBUG(1, ("OK   : Retrieved less objects than requested (it is normal).\n"));
 		}
 		if (!ret) break;
-
 		for (i = 0; i < ret; ++i) {
+			PyObject *wmi_rec = Py_BuildValue("{}");
 			if (!class_name || strcmp(co[i]->obj_class->__CLASS, class_name)) {
 				if (class_name) talloc_free(class_name);
 				class_name = talloc_strdup(ctx, co[i]->obj_class->__CLASS);
-				printf("CLASS: %s\n", class_name);
-				for (j = 0; j < co[i]->obj_class->__PROPERTY_COUNT; ++j)
-					printf("%s%s", "|", co[i]->obj_class->properties[j].name);
-				printf("\n");
+			    PyObject_CallMethod(wmi_rec, "__setitem__", "(s,s)", "classname", class_name);
 			}
+			PyObject *property_dict = Py_BuildValue("{}");
 			for (j = 0; j < co[i]->obj_class->__PROPERTY_COUNT; ++j) {
 				char *s;
 				s = string_CIMVAR(ctx, &co[i]->instance->data[j], co[i]->obj_class->properties[j].desc->cimtype & CIM_TYPEMASK);
-				printf("%s%s", "|", s);
+			    PyObject_CallMethod(property_dict, "__setitem__", "(s,s)", co[i]->obj_class->properties[j].name, s);
+
 			}
-			printf("\n");
+		    PyObject_CallMethod(wmi_rec, "append", "(o)", wmi_rec);
 		}
 	} while (ret == cnt);
 	talloc_free(pEnum);
 	pEnum = NULL;
-	return Py_BuildValue("i", status);
+	return wmi_reclist;
 
 error:
 	status = werror_to_ntstatus(result);
