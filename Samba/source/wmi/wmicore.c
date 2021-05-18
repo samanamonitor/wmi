@@ -185,7 +185,7 @@ struct composite_context *WBEM_ConnectServer_send(struct com_context *com_ctx,
     if (user)
     {
         char *cred = talloc_asprintf(c, "%s%%%s", user, password);
-        struct cli_credentials *cc = cli_credentials_init(cred);
+        struct cli_credentials *cc = cli_credentials_init(c);
         cli_credentials_set_conf(cc);
         cli_credentials_parse_string(cc, cred, CRED_SPECIFIED);
         dcom_set_server_credentials(com_ctx, server, cc);
