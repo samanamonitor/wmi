@@ -35,7 +35,7 @@ pywmi-build:
 	rm pidl/lib/Parse/Pidl/IDL.pm ; \
 	./autogen.sh ;					\
 	CPPFLAGS="-I$(PYINCLUDE)"			\
-	./configure --without-readline --enable-debug ;	\
+	./configure --without-readline ;	\
 	mkdir -p bin/static ;                \
 	$(MAKE) proto bin/wmic bin/winexe libraries ; 		\
 	touch $@
