@@ -32,6 +32,7 @@ endif
 
 pywmi-build:
 	cd Samba/source ;				\
+	rm pidl/lib/Parse/Pidl/IDL.pm ; \
 	./autogen.sh ;					\
 	CPPFLAGS="-I$(PYINCLUDE)"			\
 	./configure --without-readline --enable-debug ;	\
