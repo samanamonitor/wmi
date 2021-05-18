@@ -3169,12 +3169,12 @@ again:
 
 	for ($parser->YYData->{INPUT}) {
 		if (/^\#/) {
-			if (s/^\# (\d+) \"(.*?)\"( \d+|)$//) {
+			if (s/^\# (\d+) \"(.*?)\"( \d+|)//) {
 				$parser->YYData->{LINE} = $1-1;
 				$parser->YYData->{INPUT_FILENAME} = $2;
 				goto again;
 			}
-			if (s/^\#line (\d+) \"(.*?)\"( \d+|)$//) {
+			if (s/^\#line (\d+) \"(.*?)\"( \d+|)//) {
 				$parser->YYData->{LINE} = $1-1;
 				$parser->YYData->{INPUT_FILENAME} = $2;
 				goto again;
