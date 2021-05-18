@@ -20,7 +20,6 @@ ifeq ($(PYTHON),)
 PYTHON=python
 endif
 
-ZENHOME=        $(HOME)
 PYLIBDIR=	$(ZENHOME)/lib/python
 ZENBIN=		$(ZENHOME)/bin
 PYINCLUDE=	$(shell $(PYTHON) pyinclude.py)
@@ -33,9 +32,11 @@ endif
 
 pywmi-build:
 	cd Samba/source ;				\
+	rm pidl/lib/Parse/Pidl/IDL.pm ; \
 	./autogen.sh ;					\
 	CPPFLAGS="-I$(PYINCLUDE)"			\
-	./configure --without-readline --enable-debug ;	\
+	./configure --without-readline ;	\
+	mkdir -p bin/static ;                \
 	$(MAKE) proto bin/wmic bin/winexe libraries ; 		\
 	touch $@
 
