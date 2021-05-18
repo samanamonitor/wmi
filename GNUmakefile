@@ -35,6 +35,7 @@ pywmi-build:
 	./autogen.sh ;					\
 	CPPFLAGS="-I$(PYINCLUDE)"			\
 	./configure --without-readline --enable-debug ;	\
+	mkdir -p bin/static ;                \
 	$(MAKE) proto bin/wmic bin/winexe libraries ; 		\
 	touch $@
 
