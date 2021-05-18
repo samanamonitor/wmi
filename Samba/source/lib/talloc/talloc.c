@@ -442,7 +442,9 @@ void *_talloc_steal(const void *new_ctx, const void *ptr)
 	if (unlikely(new_ctx == NULL)) {
 		new_ctx = null_context;
 	}
+
 	tc = talloc_chunk_from_ptr(ptr);
+
 	if (unlikely(new_ctx == NULL)) {
 		if (tc->parent) {
 			_TLIST_REMOVE(tc->parent->child, tc);
