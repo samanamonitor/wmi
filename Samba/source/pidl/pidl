@@ -578,6 +578,7 @@ sub process_file($)
 		defined $pidl || die "Failed to load $idl_file";
 	} else {
 		require Parse::Pidl::IDL;
+
 		$pidl = Parse::Pidl::IDL::parse_file($idl_file, \@opt_incdirs);
 		if (! $pidl || ! @$pidl) { die "Failed to parse $idl_file"; }
 		require Parse::Pidl::Typelist;
