@@ -23,7 +23,7 @@ endif
 PYLIBDIR=	$(ZENHOME)/lib/python
 ZENBIN=		$(ZENHOME)/bin
 PYINCLUDE=	$(shell $(PYTHON) pyinclude.py)
-VERSION:=$(shell cd pysamba ; $(PYTHON) -c 'import version as v; print v.VERSION')
+VERSION:=$(shell cd pysamba ; python -c 'import version as v; print v.VERSION')
 
 LIBSUFFIX=so.0
 ifeq ($(shell uname), Darwin)
