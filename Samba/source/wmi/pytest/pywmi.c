@@ -199,7 +199,7 @@ pywmi_data(PyObject *self, PyObject *args)
 			    PyObject_CallMethod(property_dict, "__setitem__", "(s,s)", co[i]->obj_class->properties[j].name, s);
 
 			}
-		    PyObject_CallMethod(wmi_rec, "append", "(o)", wmi_rec);
+		    PyObject_CallMethod(wmi_reclist, "append", "(o)", wmi_rec);
 		}
 	} while (ret == cnt);
 	talloc_free(pEnum);
