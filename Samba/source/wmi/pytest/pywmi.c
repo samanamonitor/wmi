@@ -159,6 +159,7 @@ error:
 	status = werror_to_ntstatus(result);
 	fprintf(stderr, "NTSTATUS: %s - %s\n", nt_errstr(status), get_friendly_nt_error_msg(status));
 	talloc_free(ctx);
+	ctx = NULL;
 	return Py_BuildValue("i", status);
 }
 
