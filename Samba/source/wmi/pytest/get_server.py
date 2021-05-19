@@ -19,7 +19,7 @@ queries = {
     'disk': "SELECT * FROM win32_logicaldisk",
     'cpu': "SELECT * FROM Win32_PerfRawData_perfos_processor WHERE Name='_Total'",
     'pf': "SELECT * FROM Win32_PageFileUsage",
-    'events_system': "select * from Win32_NTLogEvent where TimeGenerated > '%s' and EventType <= %d and LogFileName='System'" \
+    'events_system': "select * from Win32_NTLogEvent where TimeGenerated > '%s' and EventType <= %d" \
         % (timefilter, event_level),
 #    'proc': "SELECT * FROM Win32_Process"
 }
