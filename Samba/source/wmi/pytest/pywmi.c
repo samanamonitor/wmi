@@ -54,6 +54,7 @@ struct cli_credentials *server_credentials;
 	}
 
 #define PY_BOOLEAN(x) x?Py_True:Py_False
+#define PY_STRING(x) x==NULL?Py_None:PyUnicode_FromString(x)
 
 #define RETURN_CVAR_ARRAY_PYOBJ(f, arr) {\
 		uint32_t i;\
@@ -84,7 +85,7 @@ pyObj_CIMVAR(union CIMVAR *v, enum CIMTYPE_ENUMERATION cimtype)
         case CIM_BOOLEAN: return v->v_boolean?Py_True:Py_False;
         case CIM_STRING:
         case CIM_DATETIME:
-        case CIM_REFERENCE: return PyUnicode_FromString(v->v_string);
+        case CIM_REFERENCE: return PY_STRING(v->v_string);
         case CIM_CHAR16: return PyUnicode_FromString("Unsupported");
         case CIM_OBJECT: return PyUnicode_FromString("Unsupported");
         case CIM_ARR_SINT8: RETURN_CVAR_ARRAY_PYOBJ(PyLong_FromLong, v->a_sint8);
@@ -98,9 +99,9 @@ pyObj_CIMVAR(union CIMVAR *v, enum CIMTYPE_ENUMERATION cimtype)
         case CIM_ARR_REAL32: RETURN_CVAR_ARRAY_PYOBJ(PyFloat_FromDouble, v->a_real32);
         case CIM_ARR_REAL64: RETURN_CVAR_ARRAY_PYOBJ(PyFloat_FromDouble, v->a_real64);
         case CIM_ARR_BOOLEAN: RETURN_CVAR_ARRAY_PYOBJ(PY_BOOLEAN, v->a_boolean);
-        case CIM_ARR_STRING: RETURN_CVAR_ARRAY_PYOBJ(PyUnicode_FromString, v->a_string);
-        case CIM_ARR_DATETIME: RETURN_CVAR_ARRAY_PYOBJ(PyUnicode_FromString, v->a_datetime);
-        case CIM_ARR_REFERENCE: RETURN_CVAR_ARRAY_PYOBJ(PyUnicode_FromString, v->a_reference);
+        case CIM_ARR_STRING: RETURN_CVAR_ARRAY_PYOBJ(PY_STRING, v->a_string);
+        case CIM_ARR_DATETIME: RETURN_CVAR_ARRAY_PYOBJ(PY_STRING, v->a_datetime);
+        case CIM_ARR_REFERENCE: RETURN_CVAR_ARRAY_PYOBJ(PY_STRING, v->a_reference);
 	default: return PyUnicode_FromString("Unsupported");
 	}
 }
@@ -229,8 +230,7 @@ pywmi_data(struct IEnumWbemClassObject *pEnum)
 				PyObject *v = pyObj_CIMVAR(&co[i]->instance->data[j], 
 					co[i]->obj_class->properties[j].desc->cimtype & CIM_TYPEMASK);
 				PyObject_CallMethodObjArgs(property_dict, Py_BuildValue("s", "__setitem__"), 
-					Py_BuildValue("s", co[i]->obj_class->properties[j].name),
-					v, NULL);
+					Py_BuildValue("s", co[i]->obj_class->properties[j].name), v, NULL);
 /*
 				char *s;
 				s = string_CIMVAR(ctx, &co[i]->instance->data[j], co[i]->obj_class->properties[j].desc->cimtype & CIM_TYPEMASK);
