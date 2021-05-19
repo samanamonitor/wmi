@@ -7,7 +7,7 @@ hostname=argv[1]
 user=argv[2]
 pwd=argv[3]
 ns="root\\cimv2"
-event_secs=300
+event_secs=600
 event_level=2
 
 
@@ -27,7 +27,6 @@ server = {}
 
 pywmi.open(hostname, user, pwd, ns)
 for i in queries.keys():
-    print(queries[i])
     server[i] = pywmi.query(queries[i])
 pywmi.close()
 
