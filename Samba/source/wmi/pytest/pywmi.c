@@ -197,9 +197,9 @@ pywmi_data(PyObject *self, PyObject *args)
 				char *s;
 				s = string_CIMVAR(ctx, &co[i]->instance->data[j], co[i]->obj_class->properties[j].desc->cimtype & CIM_TYPEMASK);
 			    PyObject_CallMethod(property_dict, "__setitem__", "(s,s)", co[i]->obj_class->properties[j].name, s);
-	printf("FB-%s\n", s);
 
 			}
+	printf("FB-%s\n", "properties done.");
 		    PyObject_CallMethod(wmi_rec, "__setitem__", "(s,o)", "properties", property_dict);
 		    PyObject_CallMethod(wmi_reclist, "append", "(o)", wmi_rec);
 		}
