@@ -173,6 +173,7 @@ pywmi_data(PyObject *self, PyObject *args)
 	result = IEnumWbemClassObject_Reset(pEnum, ctx);
 	WERR_CHECK("Reset result of WMI query.");
 	PyObject *wmi_reclist = Py_BuildValue("[]");;
+	printf("FB-\n");
 	do {
 		uint32_t i, j;
 		struct WbemClassObject *co[cnt];
