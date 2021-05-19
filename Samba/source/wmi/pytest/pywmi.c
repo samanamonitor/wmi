@@ -41,16 +41,68 @@ struct cli_credentials *server_credentials;
 
 #define RETURN_CVAR_ARRAY_STR(fmt, arr) {\
         uint32_t i;\
-	char *r;\
+		char *r;\
 \
         if (!arr) {\
                 return talloc_strdup(mem_ctx, "NULL");\
         }\
-	r = talloc_strdup(mem_ctx, "(");\
+		r = talloc_strdup(mem_ctx, "(");\
         for (i = 0; i < arr->count; ++i) {\
-		r = talloc_asprintf_append(r, fmt "%s", arr->item[i], (i+1 == arr->count)?"":",");\
+			r = talloc_asprintf_append(r, fmt "%s", arr->item[i], (i+1 == arr->count)?"":",");\
         }\
         return talloc_asprintf_append(r, ")");\
+	}
+
+#define PY_BOOLEAN(x) x?Py_True:Py_False
+
+#define RETURN_CVAR_ARRAY_PYOBJ(f, arr) {\
+		uint32_t i;\
+		PyObject *r = Py_BuildValue("[]");\
+		if (!arr) {\
+			return r;\
+		}\
+		for(i = 0; i < arr->count; i++) {\
+		    PyObject_CallMethodObjArgs(r, Py_BuildValue("s", "append"), f(arr->item[i]), NULL);\
+		}\
+		return r;\
+	}
+
+PyObject *
+pyObj_CIMVAR(TALLOC_CTX *mem_ctx, union CIMVAR *v, enum CIMTYPE_ENUMERATION cimtype)
+{
+	switch (cimtype) {
+        case CIM_SINT8: return PyLong_FromLong(v->v_sint8);
+        case CIM_UINT8: return PyLong_FromLong(v->v_uint8);
+        case CIM_SINT16: return PyLong_FromLong(v->v_sint16);
+        case CIM_UINT16: return PyLong_FromLong(v->v_uint16);
+        case CIM_SINT32: return PyLong_FromLong(v->v_sint32);
+        case CIM_UINT32: return PyLong_FromLong(v->v_uint32);
+        case CIM_SINT64: return PyLong_FromLong(v->v_sint64);
+        case CIM_UINT64: return PyLong_FromLong(v->v_sint64);
+        case CIM_REAL32: return PyFloat_FromDouble((double)v->v_uint32);
+        case CIM_REAL64: return PyFloat_FromDouble((double)v->v_uint64);
+        case CIM_BOOLEAN: return v->v_boolean?Py_True:Py_False;
+        case CIM_STRING:
+        case CIM_DATETIME:
+        case CIM_REFERENCE: return PyUnicode_FromString(v->v_string);
+        case CIM_CHAR16: return PyUnicode_FromString("Unsupported");
+        case CIM_OBJECT: return PyUnicode_FromString("Unsupported");
+        case CIM_ARR_SINT8: RETURN_CVAR_ARRAY_PYOBJ(PyLong_FromLong, v->a_sint8);
+        case CIM_ARR_UINT8: RETURN_CVAR_ARRAY_PYOBJ(PyLong_FromLong, v->a_uint8);
+        case CIM_ARR_SINT16: RETURN_CVAR_ARRAY_PYOBJ(PyLong_FromLong, v->a_sint16);
+        case CIM_ARR_UINT16: RETURN_CVAR_ARRAY_PYOBJ(PyLong_FromLong, v->a_uint16);
+        case CIM_ARR_SINT32: RETURN_CVAR_ARRAY_PYOBJ(PyLong_FromLong, v->a_sint32);
+        case CIM_ARR_UINT32: RETURN_CVAR_ARRAY_PYOBJ(PyLong_FromLong, v->a_uint32);
+        case CIM_ARR_SINT64: RETURN_CVAR_ARRAY_PYOBJ(PyLong_FromLong, v->a_sint64);
+        case CIM_ARR_UINT64: RETURN_CVAR_ARRAY_PYOBJ(PyLong_FromLong, v->a_uint64);
+        case CIM_ARR_REAL32: RETURN_CVAR_ARRAY_PYOBJ(PyFloat_FromDouble, v->a_real32);
+        case CIM_ARR_REAL64: RETURN_CVAR_ARRAY_PYOBJ(PyFloat_FromDouble, v->a_real64);
+        case CIM_ARR_BOOLEAN: RETURN_CVAR_ARRAY_PYOBJ(PY_BOOLEAN, v->a_boolean);
+        case CIM_ARR_STRING: RETURN_CVAR_ARRAY_PYOBJ(PyUnicode_FromString, v->a_string);
+        case CIM_ARR_DATETIME: RETURN_CVAR_ARRAY_PYOBJ(PyUnicode_FromString, v->a_datetime);
+        case CIM_ARR_REFERENCE: RETURN_CVAR_ARRAY_PYOBJ(PyUnicode_FromString, v->a_reference);
+	default: return PyUnicode_FromString("Unsupported");
+	}
 }
 
 char *string_CIMVAR(TALLOC_CTX *mem_ctx, union CIMVAR *v, enum CIMTYPE_ENUMERATION cimtype)
@@ -105,47 +157,24 @@ pywmi_open(PyObject *self, PyObject *args)
 {
 	WERROR result;
 	NTSTATUS status;
-	char *userdomain = "samana\\fabianb";
-	char *password = "Samana82.";
-	char *hostname = "192.168.0.110";
+	char *userdomain;
+	char *password;
+	char *hostname;
 	char *ns = "root\\cimv2";
 
 	if(!PyArg_ParseTuple(args, "ssss", &hostname, &userdomain, &password, &ns))
 		return Py_BuildValue("i", -1);
 
-	if(ctx != NULL) {
+	if(ctx != NULL || pWS != NULL) {
 		/* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
 		printf("CTX has already been initialized. Cannot continue.\n");
 		return Py_BuildValue("i", 0x5);
-	}
-
-	if(userdomain == NULL){
-		/* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
-		W_ERROR_V(result) = 0x5;
-		WERR_CHECK("Username and domain required. Cannot continue.");
-	}
-
-	if(ns == NULL) {
-		/* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
-		W_ERROR_V(result) = 0x5;
-		WERR_CHECK("WMI Namespace required. Cannot continue.");
-	}
-
-	if(password == NULL) {
-		/* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
-		W_ERROR_V(result) = 0x5;
-		WERR_CHECK("Password required. Cannot continue.");
 	}
 
 	if(hostname == NULL) {
 		/* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
 		W_ERROR_V(result) = 0x5;
 		WERR_CHECK("Hostname required. Cannot continue.");
-	}
-
-	if(pWS != NULL) {
-		W_ERROR_V(result) = 0x5;
-		WERR_CHECK("Connection cannot be reused. Close previous connection before continuing.");
 	}
 
 	com_init_ctx(&ctx, NULL);
@@ -160,6 +189,8 @@ error:
 	fprintf(stderr, "NTSTATUS: %s - %s\n", nt_errstr(status), get_friendly_nt_error_msg(status));
 	talloc_free(ctx);
 	ctx = NULL;
+	talloc_free(pWS);
+	pWS = NULL;
 	return Py_BuildValue("i", status);
 }
 
@@ -170,7 +201,7 @@ pywmi_data(struct IEnumWbemClassObject *pEnum)
 	NTSTATUS status;
 	uint32_t cnt = 5, ret;
 	char *class_name = NULL;
-	PyObject *wmi_reclist = Py_BuildValue("[]");;
+	PyObject *wmi_reclist = Py_BuildValue("[]");
 
 	result = IEnumWbemClassObject_Reset(pEnum, ctx);
 	WERR_CHECK("Reset result of WMI query.");
