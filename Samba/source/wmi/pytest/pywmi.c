@@ -31,7 +31,9 @@ char *domain = "samana";
 char *password = "Samana82.";
 char *hostname = "192.168.0.110";
 char *ns = "root\\cimv2";
+/*
 char *query = "SELECT * FROM Win32_PageFileUsage";
+*/
 
 #define PYTHON_FUNCDEF(funcname, description) \
 	{                                         \
@@ -149,6 +151,8 @@ pywmi_open(PyObject *self, PyObject *args)
 		WERR_CHECK("Connection cannot be reused. Close previous connection before continuing.");
 	}
 
+	com_init_ctx(&ctx, NULL);
+	dcom_client_init(ctx, NULL);
 	result = WBEM_ConnectServer(ctx, hostname, ns, userdomain, password, 0, 0, 0, 0, &pWS);
 	WERR_CHECK("Login to remote object.");
 
@@ -217,17 +221,15 @@ pywmi_query(PyObject *self, PyObject *args)
 	WERROR result;
 	NTSTATUS status;
 	struct IEnumWbemClassObject *pEnum = NULL;
-
-/*
 	const char *query;
+
 	if(!PyArg_ParseTuple(args, "s", &query))
-		return Py_BuildValue("i", 0);
-*/
+		return Py_BuildValue("[]");
 
 	if(ctx == NULL) {
 		/* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
 		W_ERROR_V(result) = 0x5;
-		WERR_CHECK("CTX has not been initialized. Cannot continue.");        
+		WERR_CHECK("Server context has not been initialized. Cannot continue.");        
 	}
 
 	if(pWS == NULL) {
@@ -297,8 +299,6 @@ PyInit_pywmi(void)
 	dcom_proxy_IRemUnknown_init();
 	dcom_proxy_IWbemFetchSmartEnum_init();
 	dcom_proxy_IWbemWCOSmartEnum_init();
-	com_init_ctx(&ctx, NULL);
-	dcom_client_init(ctx, NULL);
 
 	return PyModule_Create(&pywmimodule);
 }
