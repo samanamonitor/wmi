@@ -102,9 +102,7 @@ static PyObject *
 pywmi_close(PyObject *self, PyObject *args)
 {
 	talloc_free(pWS);
-	talloc_free(pEnum);
 	pWS = NULL;
-	pEnum = NULL;
 	return Py_BuildValue("i", 0);
 }
 
