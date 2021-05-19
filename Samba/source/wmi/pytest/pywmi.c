@@ -203,17 +203,15 @@ pywmi_data(PyObject *self, PyObject *args)
 		    PyObject_CallMethod(wmi_reclist, "append", "(o)", wmi_rec);
 		}
 	} while (ret == cnt);
-	printf("FB-%s\n", "array done.");
 	talloc_free(pEnum);
 	pEnum = NULL;
+	printf("FB-%s\n", "array done.");
 	return wmi_reclist;
 
 error:
 	status = werror_to_ntstatus(result);
 	fprintf(stderr, "NTSTATUS: %s - %s\n", nt_errstr(status), get_friendly_nt_error_msg(status));
-	talloc_free(ctx);
 	return Py_BuildValue("i", status);
-
 }
 
 static PyObject *
