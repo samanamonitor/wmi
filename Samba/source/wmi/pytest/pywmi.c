@@ -1,11 +1,8 @@
 /*
-	Ubuntu required packages: libpython3-dev
-	Build command:
-	gcc -DNDEBUG -g -O3 -Wall -Wstrict-prototypes -fPIC -DMAJOR_VERSION=1 -DMINOR_VERSION=0 \
-		-I/usr/include -I/usr/include/python3.6m -c spam.c -o spam.o
+This code is property of Samana Group LLC. You need permission from Samana Group
+to use this code.
 
-	gcc -shared spam.o -L/usr/lib -o spam.so
-
+To build this code, wmic must be compiled first.
 */
 
 #include <Python.h>
@@ -19,20 +16,97 @@
 
 #include "wmi.h"
 #include "proto.h"
-#define PYMODULE "pywmi"
 
-#define PY_OPEN_DOC "\
-open"
+#define PYMODULE "pywmi"
+#define PYOPEN_DOC "Creates a new connection to a Windows server using WMI.\n\
+\n\
+This functions establishes a connection with a windows server using WMI. All\n\
+the parameters are mandatory:\n\
+\n\
+	pywmi.open(hostname, username, password, namespace)\n\
+\n\
+	hostname can be an IP address or an FQDN. If the username is specified in UPN\n\
+		format, this module will try to use kerberos for authentication.\n\
+		This means that the hostname must be specified as an FQDN.\n\
+	username can be specified as \"user\" for workgroup environments, as \n\
+		\"domain\\user\" for domain managed environments or \n\
+		\"user@domain\" for domain managed environments with kerberos \n\
+		authentication\n\
+	namespace required for WMI queries. Recommended value is \"root\\cimv2\", but \n\
+		any other namespace can be specified.\n\
+\n\
+The return value is an integer with the result of the operation. 0 means correct \n\
+connection. Other values map to NTSTATUS Values as specified by \n\
+https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-erref/596a1078-e883-4972-9bbc-49e60bebca55\n\
+This module is a single instance and cannot connect to multiple servers at the same time.\n\
+This means that the `open` method can only be used once. If another connection is needed,\n\
+the connection must be closed first."
+
+#define PYCLOSE_DOC "Closes the connection to the Windows server. This method doesn't receive any parameters.\n\
+The output of this method is always 0. It will free all the memory reserved for the connection."
+
+#define PYQUERY_DOC "Sends a WQL query to the server that the module is currently connected.\n\
+The query must follow the exact syntax of all WQL queries as defined by \n\
+\n\
+https://docs.microsoft.com/en-us/windows/win32/wmisdk/wql-sql-for-wmi\n\
+\n\
+	Example: SELECT * FROM win32_operatingsystem\n\
+\n\
+	pywmi.query(wql_query)\n\
+\n\
+	The output of this method is a dictionary array with the format:\n\
+	[\n\
+		{\n\
+			\"classname\": \"...\",\n\
+			\"properties\": {\n\
+				\"property_name\": `value`\n\
+				... \n\
+			}\n\
+		},\n\
+		...\n\
+	]\n\
+\n\
+	`value` can be any of the following types:\n\
+	* string\n\
+	* long\n\
+	* boolean\n\
+	* array of any of the previous types\n\
+"
+
+#define PYMODULE_DOC "This module provides various functions to communicate with windows servers using WMI.\n\
+\n\
+Windows Management Instrumentation (WMI) is the infrastructure for management\n\
+data and operations on Windows-based operating systems.\n\
+This module utilizes Samba source code and additional code with DCOM interfaces\n\
+to allow Python to generate WMI queries targeted to a windows server.\n\
+The original source code was downloaded from \n\
+\n\
+https://www.edcint.co.nz/checkwmiplus/wmi-1.3.14.tar.gz\n\
+\n\
+And modified by Fabian Baena at Samana Group.\n\
+This library is not free. If you are using this library without written permission,\n\
+you can be prosecuted. Please refrain from using this library if you are not \n\
+authorized.\n\
+\n\
+:mod:`pywmi` exposes a simple API that allows for reutilization of WMI connections\n\
+             to windows servers.\n\
+\n\
+       >>> import pywmi\n\
+       >>> pywmi.open(server_ip, username, password, namespace)\n\
+       0\n\
+       >>> pywmi.query(wmi_query)  # wmi_query in WQL format\n\
+       {...}                       # dictionary with the result\n\
+       >>> pywmi.close()\n\
+       0\n"
 
 struct com_context *ctx = NULL;
 struct IWbemServices *pWS = NULL;
-struct cli_credentials *server_credentials;
 
 #define PYTHON_FUNCDEF(funcname, description) \
 	{                                         \
 		#funcname,                            \
 		pywmi_ ## funcname, METH_VARARGS,     \
-		#description                          \
+		description                          \
 	}
 
 #define WERR_CHECK(msg) if (!W_ERROR_IS_OK(result)) { \
@@ -179,9 +253,9 @@ pywmi_data(struct IEnumWbemClassObject *pEnum)
 			}
 			PyObject *property_dict = Py_BuildValue("{}");
 			for (j = 0; j < co[i]->obj_class->__PROPERTY_COUNT; ++j) {
-				PyObject *v = pyObj_CIMVAR(&co[i]->instance->data[j], 
+				PyObject *v = pyObj_CIMVAR(&co[i]->instance->data[j],
 					co[i]->obj_class->properties[j].desc->cimtype & CIM_TYPEMASK);
-				PyObject_CallMethodObjArgs(property_dict, Py_BuildValue("s", "__setitem__"), 
+				PyObject_CallMethodObjArgs(property_dict, Py_BuildValue("s", "__setitem__"),
 					Py_BuildValue("s", co[i]->obj_class->properties[j].name), v, NULL);
 /*
 				char *s;
@@ -216,13 +290,13 @@ pywmi_query(PyObject *self, PyObject *args)
 	if(ctx == NULL) {
 		/* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
 		W_ERROR_V(result) = 0x5;
-		WERR_CHECK("Server context has not been initialized. Cannot continue.");        
+		WERR_CHECK("Server context has not been initialized. Cannot continue.");       
 	}
 
 	if(pWS == NULL) {
 		/* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
 		W_ERROR_V(result) = 0x5;
-		WERR_CHECK("Connection has not been established with host. Cannot continue.");        
+		WERR_CHECK("Connection has not been established with host. Cannot continue.");       
 	}
 
 	if(query == NULL) {
@@ -254,16 +328,16 @@ error:
 }
 
 static PyMethodDef PyWMIMethods[] = {
-	PYTHON_FUNCDEF(open, "Connect to the server"),
-	PYTHON_FUNCDEF(query, "Send Query to the server"),
-	PYTHON_FUNCDEF(close, "Disconnect from server"),
+	PYTHON_FUNCDEF(open, PYOPEN_DOC),
+	PYTHON_FUNCDEF(query, PYQUERY_DOC),
+	PYTHON_FUNCDEF(close, PYCLOSE_DOC),
 	{NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
 static struct PyModuleDef pywmimodule = {
 	PyModuleDef_HEAD_INIT,
 	PYMODULE,   /* name of module */
-	"PyWMI Documentation",     /* module documentation, may be NULL */
+	PYMODULE_DOC,     /* module documentation, may be NULL */
 	-1,       /* size of per-interpreter state of the module,
 				 or -1 if the module keeps state in global variables. */
 	PyWMIMethods
