@@ -103,6 +103,8 @@ pywmi_close(PyObject *self, PyObject *args)
 {
 	talloc_free(pWS);
 	pWS = NULL;
+	talloc_free(ctx);
+	ctx = NULL;
 	return Py_BuildValue("i", 0);
 }
 
@@ -248,7 +250,7 @@ pywmi_query(PyObject *self, PyObject *args)
 	result = IWbemServices_ExecQuery(pWS, ctx, "WQL", query, WBEM_FLAG_RETURN_IMMEDIATELY | WBEM_FLAG_ENSURE_LOCATABLE, NULL, &pEnum);
 	WERR_CHECK("WMI query execute.");
 
-	PyObject *q_result = pywmi_data(pEnum)
+	PyObject *q_result = pywmi_data(pEnum);
 	talloc_free(pEnum);
 	pEnum = NULL;
 
@@ -257,7 +259,7 @@ pywmi_query(PyObject *self, PyObject *args)
 error:
 	status = werror_to_ntstatus(result);
 	fprintf(stderr, "NTSTATUS: %s - %s\n", nt_errstr(status), get_friendly_nt_error_msg(status));
-	talloc_free(ctx);
+	talloc_free(pEnum);
 	return Py_BuildValue("[]");
 
 }
@@ -265,7 +267,6 @@ error:
 static PyMethodDef PyWMIMethods[] = {
 	PYTHON_FUNCDEF(open, "Connect to the server"),
 	PYTHON_FUNCDEF(query, "Send Query to the server"),
-	PYTHON_FUNCDEF(data, "Get data from server"),
 	PYTHON_FUNCDEF(close, "Disconnect from server"),
 	{NULL, NULL, 0, NULL}        /* Sentinel */
 };
