@@ -23,7 +23,6 @@
 
 struct com_context *ctx = NULL;
 struct IWbemServices *pWS = NULL;
-struct IEnumWbemClassObject *pEnum = NULL;
 struct cli_credentials *server_credentials;
 
 char *userdomain = "samana\\fabianb";
@@ -163,16 +162,16 @@ error:
 }
 
 static PyObject *
-pywmi_data(PyObject *self, PyObject *args)
+pywmi_data(struct IEnumWbemClassObject *pEnum)
 {
 	WERROR result;
 	NTSTATUS status;
 	uint32_t cnt = 5, ret;
 	char *class_name = NULL;
+	PyObject *wmi_reclist = Py_BuildValue("[]");;
 
 	result = IEnumWbemClassObject_Reset(pEnum, ctx);
 	WERR_CHECK("Reset result of WMI query.");
-	PyObject *wmi_reclist = Py_BuildValue("[]");;
 	do {
 		uint32_t i, j;
 		struct WbemClassObject *co[cnt];
@@ -203,9 +202,7 @@ pywmi_data(PyObject *self, PyObject *args)
  		    PyObject_CallMethodObjArgs(wmi_reclist, Py_BuildValue("s", "append"), wmi_rec, NULL);
 		}
 	} while (ret == cnt);
-	talloc_free(pEnum);
-	pEnum = NULL;
-	printf("FB-%s\n", "array done.");
+
 	return wmi_reclist;
 
 error:
@@ -219,6 +216,7 @@ pywmi_query(PyObject *self, PyObject *args)
 {
 	WERROR result;
 	NTSTATUS status;
+	struct IEnumWbemClassObject *pEnum = NULL;
 
 /*
 	const char *query;
@@ -252,13 +250,17 @@ pywmi_query(PyObject *self, PyObject *args)
 	result = IWbemServices_ExecQuery(pWS, ctx, "WQL", query, WBEM_FLAG_RETURN_IMMEDIATELY | WBEM_FLAG_ENSURE_LOCATABLE, NULL, &pEnum);
 	WERR_CHECK("WMI query execute.");
 
-	return Py_BuildValue("i", 0);
+	PyObject *result = pywmi_data(pEnum)
+	talloc_free(pEnum);
+	pEnum = NULL;
+
+	return result;
 
 error:
 	status = werror_to_ntstatus(result);
 	fprintf(stderr, "NTSTATUS: %s - %s\n", nt_errstr(status), get_friendly_nt_error_msg(status));
 	talloc_free(ctx);
-	return Py_BuildValue("i", status);
+	return Py_BuildValue("[]");
 
 }
 
