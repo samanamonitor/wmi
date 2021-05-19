@@ -27,6 +27,7 @@ server = {}
 
 pywmi.open(hostname, user, pwd, ns)
 for i in queries.keys():
+    print(queries[i])
     server[i] = pywmi.query(queries[i])
 pywmi.close()
 
