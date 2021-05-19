@@ -118,8 +118,8 @@ pywmi_open(PyObject *self, PyObject *args)
 
 	if(ctx != NULL) {
 		/* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
-		W_ERROR_V(result) = 0x5;
-		WERR_CHECK("CTX has already been initialized. Cannot continue.");        
+		printf("CTX has already been initialized. Cannot continue.");
+		return Py_BuildValue("i", 0x5);
 	}
 
 	if(userdomain == NULL){
