@@ -25,16 +25,6 @@ struct com_context *ctx = NULL;
 struct IWbemServices *pWS = NULL;
 struct cli_credentials *server_credentials;
 
-char *userdomain = "samana\\fabianb";
-char *user = "fabianb";
-char *domain = "samana";
-char *password = "Samana82.";
-char *hostname = "192.168.0.110";
-char *ns = "root\\cimv2";
-/*
-char *query = "SELECT * FROM Win32_PageFileUsage";
-*/
-
 #define PYTHON_FUNCDEF(funcname, description) \
 	{                                         \
 		#funcname,                            \
@@ -115,10 +105,17 @@ pywmi_open(PyObject *self, PyObject *args)
 {
 	WERROR result;
 	NTSTATUS status;
+	char *userdomain = "samana\\fabianb";
+	char *password = "Samana82.";
+	char *hostname = "192.168.0.110";
+	char *ns = "root\\cimv2";
+
+	if(!PyArg_ParseTuple(args, "ssss", &hostname, &userdomain, &password, &ns))
+		return Py_BuildValue("i", -1);
 
 	if(ctx != NULL) {
 		/* TODO: search for valid WERROR value for now using STATUS_ACCESS_DENIED NTSTATUS=0xc0000022 WERROR=0x5 */
-		printf("CTX has already been initialized. Cannot continue.");
+		printf("CTX has already been initialized. Cannot continue.\n");
 		return Py_BuildValue("i", 0x5);
 	}
 
