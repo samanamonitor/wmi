@@ -199,11 +199,11 @@ pywmi_data(PyObject *self, PyObject *args)
 			    PyObject_CallMethod(property_dict, "__setitem__", "(s,s)", co[i]->obj_class->properties[j].name, s);
 
 			}
-	printf("FB-%s\n", "properties done.");
 		    PyObject_CallMethod(wmi_rec, "__setitem__", "(s,o)", "properties", property_dict);
 		    PyObject_CallMethod(wmi_reclist, "append", "(o)", wmi_rec);
 		}
 	} while (ret == cnt);
+	printf("FB-%s\n", "array done.");
 	talloc_free(pEnum);
 	pEnum = NULL;
 	return wmi_reclist;
