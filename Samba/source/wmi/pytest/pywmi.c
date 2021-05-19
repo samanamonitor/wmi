@@ -187,13 +187,13 @@ pywmi_data(PyObject *self, PyObject *args)
 		if (!ret) break;
 		for (i = 0; i < ret; ++i) {
 			PyObject *wmi_rec = Py_BuildValue("{}");
-	printf("FB-\n");
 			if (!class_name || strcmp(co[i]->obj_class->__CLASS, class_name)) {
 				if (class_name) talloc_free(class_name);
 				class_name = talloc_strdup(ctx, co[i]->obj_class->__CLASS);
 			    PyObject_CallMethod(wmi_rec, "__setitem__", "(s,s)", "classname", class_name);
 			}
 			PyObject *property_dict = Py_BuildValue("{}");
+	printf("FB-\n");
 			for (j = 0; j < co[i]->obj_class->__PROPERTY_COUNT; ++j) {
 				char *s;
 				s = string_CIMVAR(ctx, &co[i]->instance->data[j], co[i]->obj_class->properties[j].desc->cimtype & CIM_TYPEMASK);
