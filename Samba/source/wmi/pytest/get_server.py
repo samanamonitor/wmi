@@ -11,7 +11,7 @@ event_secs=300
 event_level=2
 
 
-ct = time.strptime(time.ctime(time.time() + event_secs))
+ct = time.strptime(time.ctime(time.time() - event_secs))
 timefilter = "%04d%02d%02d%02d%02d%02d.000-000" % (ct.tm_year, ct.tm_mon, ct.tm_mday, ct.tm_hour, ct.tm_min, ct.tm_sec)
 
 queries = {
