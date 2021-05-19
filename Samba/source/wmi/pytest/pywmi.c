@@ -248,11 +248,11 @@ pywmi_query(PyObject *self, PyObject *args)
 	result = IWbemServices_ExecQuery(pWS, ctx, "WQL", query, WBEM_FLAG_RETURN_IMMEDIATELY | WBEM_FLAG_ENSURE_LOCATABLE, NULL, &pEnum);
 	WERR_CHECK("WMI query execute.");
 
-	PyObject *result = pywmi_data(pEnum)
+	PyObject *q_result = pywmi_data(pEnum)
 	talloc_free(pEnum);
 	pEnum = NULL;
 
-	return result;
+	return q_result;
 
 error:
 	status = werror_to_ntstatus(result);
