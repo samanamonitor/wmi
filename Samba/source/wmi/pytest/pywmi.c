@@ -195,11 +195,11 @@ pywmi_data(PyObject *self, PyObject *args)
 			PyObject *property_dict = Py_BuildValue("{}");
 			for (j = 0; j < co[i]->obj_class->__PROPERTY_COUNT; ++j) {
 				char *s;
+			PyObject_CallMethod(property_dict, "__str__", "()");
 				s = string_CIMVAR(ctx, &co[i]->instance->data[j], co[i]->obj_class->properties[j].desc->cimtype & CIM_TYPEMASK);
 			    PyObject_CallMethod(property_dict, "__setitem__", "(s,s)", co[i]->obj_class->properties[j].name, s);
 
 			}
-			PyObject_CallMethod(property_dict, "__str__", "()");
 		    PyObject_CallMethod(wmi_rec, "__setitem__", "(s,o)", "properties", property_dict);
 		    PyObject_CallMethod(wmi_reclist, "append", "(o)", wmi_rec);
 		}
