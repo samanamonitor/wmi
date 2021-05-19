@@ -10,6 +10,8 @@ This source code was downloaded from https://www.edcint.co.nz/checkwmiplus/wmi-1
 * wget
 * unzip
 * git
+* python3
+* python3-dev
 
 # Build
 `make`
