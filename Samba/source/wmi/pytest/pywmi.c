@@ -68,7 +68,7 @@ struct cli_credentials *server_credentials;
 	}
 
 PyObject *
-pyObj_CIMVAR(TALLOC_CTX *mem_ctx, union CIMVAR *v, enum CIMTYPE_ENUMERATION cimtype)
+pyObj_CIMVAR(union CIMVAR *v, enum CIMTYPE_ENUMERATION cimtype)
 {
 	switch (cimtype) {
         case CIM_SINT8: return PyLong_FromLong(v->v_sint8);
@@ -226,10 +226,16 @@ pywmi_data(struct IEnumWbemClassObject *pEnum)
 			}
 			PyObject *property_dict = Py_BuildValue("{}");
 			for (j = 0; j < co[i]->obj_class->__PROPERTY_COUNT; ++j) {
+				PyObject *v = pyObj_CIMVAR(&co[i]->instance->data[j], 
+					co[i]->obj_class->properties[j].desc->cimtype & CIM_TYPEMASK);
+				PyObject_CallMethodObjArgs(property_dict, Py_BuildValue("s", "__setitem__"), 
+					Py_BuildValue("s", co[i]->obj_class->properties[j].name),
+					v, NULL);
+/*
 				char *s;
 				s = string_CIMVAR(ctx, &co[i]->instance->data[j], co[i]->obj_class->properties[j].desc->cimtype & CIM_TYPEMASK);
 			    PyObject_CallMethod(property_dict, "__setitem__", "(s,s)", co[i]->obj_class->properties[j].name, s);
-
+*/
 			}
 		    PyObject_CallMethodObjArgs(wmi_rec, Py_BuildValue("s", "__setitem__"), Py_BuildValue("s", "properties"), property_dict, NULL);
  		    PyObject_CallMethodObjArgs(wmi_reclist, Py_BuildValue("s", "append"), wmi_rec, NULL);
