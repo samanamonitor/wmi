@@ -186,8 +186,8 @@ pywmi_data(PyObject *self, PyObject *args)
 		}
 		if (!ret) break;
 		for (i = 0; i < ret; ++i) {
-/*
 			PyObject *wmi_rec = Py_BuildValue("{}");
+/*
 			if (!class_name || strcmp(co[i]->obj_class->__CLASS, class_name)) {
 				if (class_name) talloc_free(class_name);
 				class_name = talloc_strdup(ctx, co[i]->obj_class->__CLASS);
@@ -201,8 +201,8 @@ pywmi_data(PyObject *self, PyObject *args)
 
 			}
 		    PyObject_CallMethod(wmi_rec, "__setitem__", "(s,o)", "properties", property_dict);
-		    PyObject_CallMethod(wmi_reclist, "append", "(o)", wmi_rec);
 */
+ 		    PyObject_CallMethod(wmi_reclist, "append", "(o)", wmi_rec);
 		}
 	} while (ret == cnt);
 	talloc_free(pEnum);
